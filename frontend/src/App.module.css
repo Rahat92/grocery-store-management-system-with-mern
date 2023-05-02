@@ -1,0 +1,23 @@
+.product_box{
+    padding:.3rem 0;
+    display: flex;
+    justify-content: space-between;
+    color:white;
+}
+.products{
+    padding: 1rem 5rem;
+    color: black;
+}
+input{
+    color: black
+}
+.cartDetail{
+    color:white;
+    margin-top: 1rem;
+}
+.cartDetailBox{
+    display:flex
+}
+.customerName{
+    border-bottom: 3px solid white;
+}
