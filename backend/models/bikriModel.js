@@ -52,16 +52,19 @@ bikriSchema.post('save', async function(){
     const productsIds = this.productId;
     console.log(productsIds);
     const quantitys = this.quantity;
-    console.log(quantitys);
-    let products = []
-    await Promise.all(productsIds.map(async(el,i) => {
-        const my = await Product.findById(el)
-        products.push(my)
+    console.log(quantitys[0]);
+    const products = await Promise.all(productsIds.map(async(el,i) => {
+        return await Product.findById(el)
+        // products.push(my)
     }))
+    console.log(products);
+    console.log(this.quantity);
     products.map(async(el, i) => {
-        await el.updateOne({
-            quantity: el.quantity-quantitys[i]
-        })
+        if(this.quantity[i]<=el.quantity){
+            await el.updateOne({
+                quantity: el.quantity-this.quantity[i]
+            })
+        }
     })
 })
 
