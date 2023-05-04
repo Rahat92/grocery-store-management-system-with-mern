@@ -19,7 +19,7 @@ const bikriApi = apiSlice.injectEndpoints({
                     args.productId.map((el, i) => {
                         dispatch(
                             apiSlice.util.updateQueryData('getProduct', undefined, (products) => {
-                                const product = products?.products.find(product=>product._id == el)
+                                const product = products.find(product=>product._id == el)
                                 product.quantity = product.quantity - newCart.newBikri.quantity[i]
                             })
                         )

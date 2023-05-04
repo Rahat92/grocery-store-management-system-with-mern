@@ -15,9 +15,9 @@ const App = () => {
   useEffect(() => {
     let resultArr;
     let productNumber;
-    if(products?.products&&products.products.length>0){
-      resultArr = products.products.map(el => {return {productId: el._id, name: el.name, price: el.price, quantity: '', totalAmount: ''}})
-      productNumber = products.products.map(el => {
+    if(products?.length>0){
+      resultArr = products.map(el => {return {productId: el._id, name: el.name, price: el.price, quantity: '', totalAmount: ''}})
+      productNumber = products.map(el => {
         return {
           productNumber: Number(el.quantity),
           name: el.name
@@ -27,7 +27,7 @@ const App = () => {
     console.log(productNumber);
     setProductNumbers(productNumber)
     setResultArr(resultArr)
-  },[products?.products.length])
+  },[products?.length])
   console.log(productNumbers);
   useEffect(() => {
     if(isSuccess){
@@ -108,7 +108,7 @@ const App = () => {
         <option value= '' hidden selected>Select Customer</option>
         {customers?.customers?.length>0&&customers.customers.map(el => <option value={el._id+","+el.name}>{el.name}</option>)}
       </select>&nbsp;
-      {products?.products?.map((el, i) => {
+      {products?.map((el, i) => {
         return (
           <div className= {style.product_box}>
             <h1>Name: {el.name}, Price: {el.price}, Quantity: {el.quantity}</h1>

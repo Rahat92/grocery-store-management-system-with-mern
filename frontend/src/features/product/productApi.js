@@ -6,8 +6,16 @@ const productApi = apiSlice.injectEndpoints({
             query: () => `/products`,
             providesTags:['getProducts'],
             transformResponse: (response) => {
-                
-                return response
+                console.log(response);
+                return response.products.sort((a,b) => {
+                    if (a.name > b.name) {
+                        return -1;
+                    }
+                    if (b.name > a.name) {
+                        return 1;
+                    }
+                    return 0;
+                })
             }
         }),
         
