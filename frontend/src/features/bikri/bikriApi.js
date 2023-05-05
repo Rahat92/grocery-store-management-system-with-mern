@@ -29,6 +29,12 @@ const bikriApi = apiSlice.injectEndpoints({
                 }
             }
         }),
+        getCustomerBikris: builder.query({
+            query: (customerId) => `/bikri/customer/${customerId}`,
+            transformResponse: (response) => {
+                return response.customerBikri
+            }
+        })
     })
 })
-export const {useBuyProductMutation} = bikriApi;
+export const {useBuyProductMutation, useGetCustomerBikrisQuery} = bikriApi;

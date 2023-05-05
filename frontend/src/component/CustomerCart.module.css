@@ -1,0 +1,18 @@
+*{
+    margin: 0;
+    padding: 0
+}
+table{
+    /* padding: 1rem; */
+    color: red;
+    margin: 1rem auto;
+}
+/* tr{
+    padding: 0
+} */
+td{
+    /* box-sizing: border-box */
+}
+.myTable>tr{
+    border: 1px solid white
+}
