@@ -2,17 +2,25 @@
     margin: 0;
     padding: 0
 }
-table{
+body{
+    background:white
+}
+.myTable{
     /* padding: 1rem; */
-    color: red;
+    color: green;
     margin: 1rem auto;
 }
+
 /* tr{
     padding: 0
 } */
 td{
     /* box-sizing: border-box */
 }
-.myTable>tr{
-    border: 1px solid white
+.myTable>tr:not(:first-child){
+    border: 1px solid gray
+}
+.myTable>tr:first-child{
+    color:green;
+    height:1rem
 }
