@@ -32,7 +32,15 @@ const bikriApi = apiSlice.injectEndpoints({
         getCustomerBikris: builder.query({
             query: (customerId) => `/bikri/customer/${customerId}`,
             transformResponse: (response) => {
-                return response.customerBikri
+                return response.customerBikri.sort((a, b) => {
+                    if (a.cartAt > b.cartAt) {
+                        return -1;
+                    }
+                    if (b.cartAt > a.cartAt) {
+                        return 1;
+                    }
+                    return 0;
+                })
             }
         })
     })
