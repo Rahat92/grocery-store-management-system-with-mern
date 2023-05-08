@@ -1,19 +1,24 @@
 const Bikri = require("../models/bikriModel");
 const Product = require("../models/productModel");
+const ApiFeature = require("../uitls/apiFeatures");
 const catchAsyncError = require("../utils/catchAsyncError");
-
 exports.createBikri = catchAsyncError(async(req,res,next) => {
     const newBikri = await Bikri.create(req.body)
     res.status(201).json({
         status:'success',
         newBikri
     })
-})
+})                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
 exports.customerBikri = catchAsyncError(async(req,res,next) => {
-    const customerBikri = await Bikri.find({customerId: req.params.customerId})
-    console.log(customerBikri);
+    let customerBikri = Bikri.find({customerId: req.params.customerId})
+    const documents = await Bikri.find({customerId: req.params.customerId}).countDocuments();
+    const features = new ApiFeature(customerBikri, req.query).filter().sort().pagination()
+    customerBikri = await features.query;
     res.status(201).json({
-        status:'success',
+        status: 'success',
+        documents: documents,
+        result: customerBikri.length,
+        pages: Math.ceil(documents/3),
         customerBikri
     })
 })
@@ -77,7 +82,6 @@ exports.customerBikriStats = catchAsyncError(async(req,res,next) => {
         },
         
     ])
-    // const totalSoldPen = customerBikri.filter(el => el.dataArr[1] === 'Pen').map(el => el.dataArr[0]).reduce((f,c) => f+c, 0);
+    // const totalSoldPen = customerBikri.filter(el => el=== 'Pen').map(el => el.dataArr[0]).reduce((f,c) => f+c, 0);  
     console.log(customerBikri);
-    
 })

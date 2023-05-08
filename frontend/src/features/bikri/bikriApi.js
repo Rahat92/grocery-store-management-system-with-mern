@@ -13,9 +13,6 @@ const bikriApi = apiSlice.injectEndpoints({
                 try{
                     console.log(args);
                     const { data: newCart} = await queryFulfilled;
-                    console.log(newCart)
-                    console.log(newCart.productId);
-                    console.log(args.productId);
                     args.productId.map((el, i) => {
                         dispatch(
                             apiSlice.util.updateQueryData('getProduct', undefined, (products) => {
@@ -30,9 +27,9 @@ const bikriApi = apiSlice.injectEndpoints({
             }
         }),
         getCustomerBikris: builder.query({
-            query: (customerId) => `/bikri/customer/${customerId}`,
+            query: ({customerId, page}) => `/bikri/customer/${customerId}?page=${page}`,
             transformResponse: (response) => {
-                return response.customerBikri.sort((a, b) => {
+                const customerBikri = response.customerBikri.sort((a, b) => {
                     if (a.cartAt > b.cartAt) {
                         return -1;
                     }
@@ -41,6 +38,11 @@ const bikriApi = apiSlice.injectEndpoints({
                     }
                     return 0;
                 })
+                const pages = response.pages
+                return {
+                    customerBikri,
+                    pages
+                }
             }
         })
     })

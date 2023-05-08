@@ -11,5 +11,17 @@ class ApiFeature {
         this.query = this.query.find(queryCopy)
         return this
     }
+    pagination(){
+        const page = this.queryStr.page*1 || 1;
+        const limit = 3;
+        const skip = (page-1)*limit;
+        this.query = this.query.limit(limit).skip(skip)
+        return this
+    }
+    sort() {
+        this.query = this.query.sort('-cartAt -_id')
+        return this
+    }
+    
 }
 module.exports = ApiFeature

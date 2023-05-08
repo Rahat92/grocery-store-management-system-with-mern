@@ -3,11 +3,11 @@
     padding: 0
 }
 body{
-    background:orange
+    background:green
 }
 .myTable{
     /* padding: 1rem; */
-    color: green;
+    color: white;
     margin: 1rem auto;
 }
 

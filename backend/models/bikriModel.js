@@ -11,7 +11,9 @@ const bikriSchema = new mongoose.Schema({
         type: Number,
         required:[true, 'must have totalAmount']
     }],
-
+    totalBikri: {
+        type: Number,
+    },
     productName:[{
         type: String,
         required:[true, 'must have a product name']
@@ -50,9 +52,7 @@ const bikriSchema = new mongoose.Schema({
 
 bikriSchema.post('save', async function(){
     const productsIds = this.productId;
-    console.log(productsIds);
     const quantitys = this.quantity;
-    console.log(quantitys[0]);
     const products = await Promise.all(productsIds.map(async(el,i) => {
         return await Product.findById(el)
         // products.push(my)
@@ -68,6 +68,7 @@ bikriSchema.post('save', async function(){
     })
 })
 
+bikriSchema.index({productName: 1}, {unique: true})
 const Bikri = mongoose.model('Bikri', bikriSchema)
 
 
