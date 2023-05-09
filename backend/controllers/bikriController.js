@@ -12,6 +12,8 @@ exports.createBikri = catchAsyncError(async(req,res,next) => {
 exports.customerBikri = catchAsyncError(async(req,res,next) => {
     let customerBikri = Bikri.find({customerId: req.params.customerId})
     const documents = await Bikri.find({customerId: req.params.customerId}).countDocuments();
+    const atAllAmount = (await Bikri.find({customerId: req.params.customerId})).map(el => el.totalBikri).reduce((f,c) => f+c);
+    console.log(atAllAmount)
     const features = new ApiFeature(customerBikri, req.query).filter().sort().pagination()
     customerBikri = await features.query;
     res.status(201).json({
@@ -19,6 +21,7 @@ exports.customerBikri = catchAsyncError(async(req,res,next) => {
         documents: documents,
         result: customerBikri.length,
         pages: Math.ceil(documents/3),
+        totalCart: atAllAmount,
         customerBikri
     })
 })

@@ -11,9 +11,9 @@ const bikriSchema = new mongoose.Schema({
         type: Number,
         required:[true, 'must have totalAmount']
     }],
-    totalBikri: {
-        type: Number,
-    },
+    // totalBikri: {
+    //     type: Number,
+    // },
     productName:[{
         type: String,
         required:[true, 'must have a product name']
@@ -48,8 +48,14 @@ const bikriSchema = new mongoose.Schema({
         ref: 'Customer',
         required: [true, 'must have a customer under a cart']
     }
+}, {
+    toJSON:{virtuals:true},
+    toObject:{virtuals:true},
 })
 
+bikriSchema.virtual('totalBikri').get(function () {
+    return this.totalAmount.reduce((f,c) => f+c)
+})
 bikriSchema.post('save', async function(){
     const productsIds = this.productId;
     const quantitys = this.quantity;

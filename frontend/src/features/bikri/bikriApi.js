@@ -39,9 +39,11 @@ const bikriApi = apiSlice.injectEndpoints({
                     return 0;
                 })
                 const pages = response.pages
+                const totalCartAmount = response.totalCart
                 return {
                     customerBikri,
-                    pages
+                    pages,
+                    totalCartAmount
                 }
             }
         })

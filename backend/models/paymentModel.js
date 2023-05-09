@@ -17,9 +17,13 @@ const paymentSchema = new mongoose.Schema({
     toObject:{virtuals: true},
 })
 
-// paymentSchema.virtual('totalPrice').get(function(){
-//     return this.price*this.quantity
+// paymentSchema.virtual('totalPayments').get(function(){
+//     let total = []
+//     total.push(this.paid)
+//     console.log(total.reduce((f,c) => f+c));
 // })
-
+// paymentSchema.pre(/^find/, function () {
+//     this.populate('customer')
+// })
 const Payment = mongoose.model('Payment', paymentSchema)
 module.exports = Payment;
