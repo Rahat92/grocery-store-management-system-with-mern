@@ -20,13 +20,6 @@ exports.getCustomer = catchAsyncError(async(req,res,next) => {
     }else{
         totalCart = 0
     }
-    // let totalBuy = customer.product.map(el => el.totalAmount);
-    
-    // if(totalBuy.length>0){
-    //     totalBuy = totalBuy.reduce((f,c) => f+c)
-    // }else{
-    //     totalBuy = 0
-    // }
     let paidAmount = customer?.paid?.map(el => el.paid)
     if(paidAmount?.length>0){
         paidAmount = paidAmount.reduce((f,c) => f+c)
@@ -34,11 +27,6 @@ exports.getCustomer = catchAsyncError(async(req,res,next) => {
         paidAmount = 0
     }
     const due = totalCart-paidAmount
-    // const customArr = customer.product.map(product => {
-    //     return {
-    //         productName:
-    //     }
-    // })
 
     res.status(201).json({
         status:'success',

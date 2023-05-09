@@ -20,7 +20,8 @@ exports.customerBikri = catchAsyncError(async(req,res,next) => {
         status: 'success',
         documents: documents,
         result: customerBikri.length,
-        pages: Math.ceil(documents/3),
+        pages: Math.ceil(documents / 3),
+        currentPage: req.query.page*1||1,
         totalCart: atAllAmount,
         customerBikri
     })
