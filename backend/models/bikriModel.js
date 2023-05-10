@@ -11,6 +11,11 @@ const bikriSchema = new mongoose.Schema({
         type: Number,
         required:[true, 'must have totalAmount']
     }],
+    payAmount: {
+        type: Number,
+        default: 0
+    },
+
     // totalBikri: {
     //     type: Number,
     // },
@@ -55,6 +60,9 @@ const bikriSchema = new mongoose.Schema({
 
 bikriSchema.virtual('totalBikri').get(function () {
     return this.totalAmount.reduce((f,c) => f+c)
+})
+bikriSchema.virtual('dueAmount').get(function () {
+    return this.totalAmount.reduce((f,c) => f+c)-this.payAmount
 })
 bikriSchema.post('save', async function(){
     const productsIds = this.productId;

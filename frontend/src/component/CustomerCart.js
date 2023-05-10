@@ -70,7 +70,6 @@ const CustomerCart = () => {
               products: products[i]
             }
           })
-          console.log(final);
           setMyProducts(final)
       }
     },[customerBikri])
@@ -83,15 +82,16 @@ const CustomerCart = () => {
           <p style = {{color:'red'}}>মোট জমাঃ {payments?.totalPayments} টাকা</p>
         {totalCartAmount > payments?.totalPayments && <p style = {{color:'red'}}>বাকিঃ {totalCartAmount-payments?.totalPayments} টাকা</p>}
           <div style = {{display: 'flex', gap:'5rem', justifyContent:'space-between', padding:'1rem',}}>
-            <div style = {{flex: '0 0 20%'}}>Date</div>
-            <div style = {{flex: '0 0 10%'}}>Name</div>
-            <div style = {{flex: '0 0 10%'}}>Price</div>
-            <div style = {{flex: '0 0 10%'}}>Quantity</div>
-            <div style = {{flex: '0 0 10%'}}>Amount</div>
-            <div style = {{flex: '0 0 10%'}}>Total</div>
+            <div style = {{flex: '0 0 20%'}}>বিক্রির সময়</div>
+            <div style = {{flex: '0 0 10%'}}>পণ্যের তালিকা</div>
+            <div style = {{flex: '0 0 10%'}}>মুল্য</div>
+            <div style = {{flex: '0 0 10%'}}>পরিমান</div>
+            <div style = {{flex: '0 0 10%'}}>মোট মুল্য</div>
+            <div style = {{flex: '0 0 10%'}}>সর্বমোট মুল্য</div>
           </div>
+          {console.log(myProducts)}
           {myProducts.map((el,i) => {
-          return <div style={{display:'flex', gap:'5rem', alignItems:'center', padding:'1rem', justifyContent:'space-between', flex:'1', marginBottom:'1rem', border:'1px solid black'}}><div style = {{flex: '0 0 20%'}}>{el.cartAt.day} {el.cartAt.month} {el.cartAt.year} at {el.cartAt.readableTime}</div><div style = {{flex: '0 0 10%'}}>{el.products.map(el => <div style = {{width: '100px'}}>{el.name}</div>)}</div><div style = {{flex: '0 0 10%'}}>{el.products.map(el => <div>{el.price}</div>)}</div><div style = {{flex: '0 0 10%'}}>{el.products.map(el => <div>{el.quantity}</div>)}</div><div style = {{flex: '0 0 10%'}}>{el.products.map(el => <div>{el.totalAmount}</div>)}</div><div style = {{flex: '0 0 10%'}}>{el.products.map(el => el.totalAmount)?.reduce((f,c) => f+c)} টাকা</div></div>
+          return <div style={{display:'flex', gap:'5rem', alignItems:'center', padding:'1rem', justifyContent:'space-between', flex:'1', marginBottom:'1rem', border:'1px solid black'}}><div style = {{flex: '0 0 20%'}}>{el.cartAt.day} {el.cartAt.month} {el.cartAt.year} at {el.cartAt.readableTime}</div><div style = {{flex: '0 0 10%'}}>{el.products.map(el => <div style = {{width: '100px', padding: '.8rem 0'}}>{el.name}</div>)}</div><div style = {{flex: '0 0 10%'}}>{el.products.map(el => <div style={{padding: '.8rem 0'}}>{el.price}</div>)}</div><div style = {{flex: '0 0 10%'}}>{el.products.map(el => <div style={{padding: '.8rem 0'}}>{el.quantity}</div>)}</div><div style = {{flex: '0 0 10%'}}>{el.products.map(el => <div style={{padding: '.8rem 0'}}>{el.totalAmount}</div>)}</div><div style = {{flex: '0 0 10%'}}>{el.products.map(el => el.totalAmount)?.reduce((f,c) => f+c)} টাকা</div></div>
         })}
           <div style={{display:'flex', justifyContent:'flex-end'}}>Page: {pages}</div>
           <div style={{display:'flex', gap:'1rem', justifyContent:'center', position: 'fixed', bottom:'2rem', left:'50%', transform:'translateX(-50%)'}}>{totalPages?.map((el,i) => <button style={{background:'gray', display:'flex', backgroundColor: currentPage===i+1?'red':'', width:'25px', height:'25px', justifyContent:'center', borderRadius:'50%', alignItems:'center'}} onClick={() => pageclickHandler(i+1)}>{i+1}</button>)}</div>

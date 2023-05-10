@@ -9,6 +9,16 @@ exports.createBikri = catchAsyncError(async(req,res,next) => {
         newBikri
     })
 })                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+exports.updateBikri = catchAsyncError(async(req,res,next) => {
+    let updatedBikri = await Bikri.findByIdAndUpdate(req.params.bikriId, {
+        payAmount: req.body.payAmount
+    },{new:true})
+    res.status(201).json({
+        status:'success',
+        updatedBikri
+    })
+})     
+
 exports.customerBikri = catchAsyncError(async(req,res,next) => {
     let customerBikri = Bikri.find({customerId: req.params.customerId})
     const documents = await Bikri.find({customerId: req.params.customerId}).countDocuments();
