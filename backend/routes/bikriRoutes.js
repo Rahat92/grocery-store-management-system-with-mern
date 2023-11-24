@@ -1,5 +1,12 @@
 const express = require('express');
-const { createBikri, customerBikri, customerBikriStats, updateBikri } = require('../controllers/bikriController');
+const {
+  createBikri,
+  customerBikri,
+  customerBikriStatsMonthly,
+  updateBikri,
+  sellerBikriStatsMonthly,
+  sellerBikriStatsYearly,
+} = require("../controllers/bikriController");
 const router = express.Router()
 
 router
@@ -11,10 +18,19 @@ router
     .patch(updateBikri)
     
 router
-    .route('/customer/:customerId/stats/:year')
-    .get(customerBikriStats)
+  .route("/stats/:year")
+  .get(sellerBikriStatsMonthly);
 router
-    .route('/customer/:customerId')
-    .get(customerBikri)
+  .route("/customers-sell/:year")
+  .get(sellerBikriStatsYearly)
+router
+  .route("/customer/:customerId/stats/:year")
+  .get(customerBikriStatsMonthly);
+
+  
+  router
+  .route('/customer/:customerId')
+  .get(customerBikri)
+  
 const bikriRouter = router;
 module.exports = bikriRouter

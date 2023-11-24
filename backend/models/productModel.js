@@ -1,31 +1,52 @@
-const mongoose = require('mongoose');
-const productSchema = new mongoose.Schema({
+const mongoose = require("mongoose");
+const productSchema = new mongoose.Schema(
+  {
     name: {
-        type: String,
-        // enum: ['Pen', 'Pencil', 'Rubber', 'Graph']
+      type: String,
+      unique: true,
     },
-    quantity:{
-        type: Number,
-        min: 1,
-        required: [true, 'You must have to specify the quantity']
+    category: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Category",
+      required: [true, "Must have a Category"],
     },
-    price:{
-        type: Number,
-        min: 5,
-        required: [true, 'You must have to specify the price']
+    productCategory: {
+      type: String,
+      required: [true, "Must have a Product Category"],
+    },
+    quantity: {
+      type: Number,
+      min: 1,
+      required: [true, "You must have to specify the quantity"],
+    },
+    buyPrice: {
+      type: Number,
+      required: [true, "You must have to specify the buy price"],
+    },
+    price: {
+      type: Number,
+      min: 5,
+      required: [true, "You must have to specify the price"],
     },
     photo: {
-        type: String,
-        default: 'default.png',
-    }
-},{
-    toJSON:{virtuals: true},
-    toObject:{virtuals: true},
-})
+      type: String,
+      default: "default.png",
+    },
+  },
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
+);
 
 // productSchema.virtual('totalPrice').get(function(){
 //     return this.price*this.quantity
 // })
-
-const Product = mongoose.model('Product', productSchema)
+productSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "category",
+  });
+  next();
+});
+const Product = mongoose.model("Product", productSchema);
 module.exports = Product;

@@ -1,4 +1,3 @@
-const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
 const AppError = require("../uitls/AppError");
 const catchAsyncError = require("../utils/catchAsyncError");

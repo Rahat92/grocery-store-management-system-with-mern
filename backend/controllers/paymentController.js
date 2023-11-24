@@ -22,13 +22,10 @@ exports.getPayments = catchAsyncError(async(req,res,next) => {
         payments = await payments.find(queryObj)
         totalPayments = payments.map(el => el.paid).reduce((f,c) => f+c)
         docs = await Payment.find(queryObj).countDocuments()
-        // totalPayments = 
     }else {
         docs = await Payment.find(queryObj).countDocuments()
         payments = await payments.find()
     }
-    console.log(customerName);
-    // const payments = await Payment.find(queryObj)
     res.status(201).json({
         status: 'success',
         docs,

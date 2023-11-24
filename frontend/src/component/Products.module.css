@@ -1,0 +1,12 @@
+.table {
+  border: 1px solid black;
+  width: 100%;
+}
+.table thead tr {
+  border: 1px solid black;
+}
+.addBtn {
+  outline: 3px solid blue;
+  padding: 0.3rem;
+  margin-top: 1rem;
+}

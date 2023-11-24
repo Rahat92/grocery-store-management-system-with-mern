@@ -5,10 +5,7 @@ const router = express.Router()
 
 router
     .route('/')
-    .post(protect, restrictedTo('admin'), createProduct)
-
-router
-    .route('/')
+    .post(createProduct)
     .get(getProducts)
 
 router

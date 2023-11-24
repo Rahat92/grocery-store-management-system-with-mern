@@ -9,6 +9,7 @@ const customerRouter = require('./routes/customerRoutes');
 const paymentRouter = require('./routes/paymentRoutes');
 const cartRouter = require('./routes/cartRoutes');
 const bikriRouter = require('./routes/bikriRoutes');
+const categoryRouter = require('./routes/categoryRoutes');
 app.use(express.json())
 app.use(cookieParser())
 app.use('/api/v1/users', userRouter)
@@ -17,6 +18,7 @@ app.use('/api/v1/customers', customerRouter)
 app.use('/api/v1/paid', paymentRouter)
 app.use('/api/v1/cart', cartRouter)
 app.use('/api/v1/bikri', bikriRouter)
+app.use('/api/v1/category', categoryRouter)
 app.all('*', (req,res,next) => {
     next(new AppError('No route defined by this url', 400))  
 })

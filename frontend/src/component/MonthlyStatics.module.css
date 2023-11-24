@@ -1,12 +1,9 @@
-body {
-  background: green;
-}
 .customerStatTable {
   width: 100%;
 }
 .customerStatTable thead tr > td:nth-child(1),
 .customerStatTable thead tr > td:nth-child(2) {
-  /* padding: 1rem; */
+  padding: 1rem;
 }
 .customerStatBody > tr {
   border-top: 5px solid white;
@@ -15,26 +12,9 @@ body {
 .customerStatBody > tr > td:first-child {
   padding: 1rem;
 }
-.customerStatBody > tr > td:nth-child(1) {
-  border-right: 2px solid black;
-}
 .customerStatBody > tr > td:nth-child(2) {
-  border-right: 2px solid black;
-}
-.customerStatBody > tr > td:nth-child(3) {
-  border-right: 2px solid black;
-}
-.customerStatBody > tr > td:nth-child(4) {
-  border-right: 2px solid black;
-}
-.customerStatBody > tr > td:nth-child(5) {
-  border-right: 2px solid black;
-}
-.customerStatBody > tr > td:nth-child(6) {
-  border-right: 2px solid black;
-}
-.customerStatBody > tr > td:nth-child(7) {
-  border-right: 2px solid black;
+  border: 2px solid black;
+  padding: 1rem;
 }
 
 .statTableName {
@@ -44,17 +24,11 @@ body {
 .statTableName > tr:not(:last-child) {
   border-bottom: 1px solid black;
 }
-.statTableQuantity {
-  width: 100%;
-}
-
-.statTableQuantity > tr:not(:last-child) {
-  border-bottom: 1px solid black;
-}
 
 .statTablePrice {
   width: 100%;
 }
+
 .statTablePrice > tr:not(:last-child) {
   border-bottom: 1px solid black;
 }
