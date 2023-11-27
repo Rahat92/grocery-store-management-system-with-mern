@@ -12,7 +12,13 @@ const Products = () => {
   const { data: categories } = useGetCategoriesQuery();
   console.log(categories);
   const [openCreateProductModal, setOpenCreateProductModal] = useState(false);
-  const { data: products } = useGetProductQuery();
+  const { products, totalPages } = useGetProductQuery({category:'all',page:1}, {
+    // skip: !skipped,
+    selectFromResult: ({ data }) => ({
+      totalPages: data?.totalPages,
+      products: data?.products,
+    }),
+  });
   const openAddProductModal = () => {
     setOpenCreateProductModal(true);
   };

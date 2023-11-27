@@ -3,20 +3,22 @@ import { apiSlice } from "../apis/apiSlice";
 const productApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getProduct: builder.query({
-      query: (category) => {
-        const rootUrl = `/products?limit=4`;
+      query: ({ category, page, search }) => {
+        const limit = 2;
+        const rootUrl = `/products?page=${page}&limit=${limit}&keyword=${
+          search ? search : ""
+        }${category !== "all" ? `&productCategory=${category}` : ""}`;
+        console.log(rootUrl);
         return {
-          url:
-            category !== "all"
-              ? `/products?productCategory=${category}&limit=4`
-              : rootUrl,
+          url: rootUrl,
         };
       },
       providesTags: (result, err, args) => [
         { type: "getProducts", category: args },
       ],
       transformResponse: (response) => {
-        return response.products.sort((a, b) => {
+        console.log(response);
+        const products = response.products.sort((a, b) => {
           if (a.name > b.name) {
             return -1;
           }
@@ -25,6 +27,10 @@ const productApi = apiSlice.injectEndpoints({
           }
           return 0;
         });
+        return {
+          totalPages: response.pages,
+          products,
+        };
       },
     }),
     createProduct: builder.mutation({

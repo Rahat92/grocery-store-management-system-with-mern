@@ -3,6 +3,19 @@ class ApiFeature {
     this.query = query;
     this.queryStr = queryStr;
   }
+  search() {
+    const keyword = this.queryStr.keyword
+      ? {
+          name: {
+            $regex: this.queryStr.keyword,
+            $options: "i",
+          },
+        }
+      : {};
+    console.log('key',keyword)
+    this.query = this.query.find({ ...keyword });
+    return this;
+  }
   filter() {
     let queryCopy = { ...this.queryStr };
     const excludedFields = ["page, limit"];

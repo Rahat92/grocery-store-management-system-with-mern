@@ -4,6 +4,7 @@ import {
 } from "../features/customer/customerApi";
 import { useGetProductQuery } from "../features/product/productApi";
 import style from "../App.module.css";
+import HomeStyle from "./Home.module.css";
 import { useEffect, useState } from "react";
 import {
   useBuyProductMutation,
@@ -14,10 +15,19 @@ const Home = () => {
   const { data: categories } = useGetCategoriesQuery();
   console.log(categories);
   const [category, setCategory] = useState("all");
+  const [page, setPage] = useState(1);
   const [skipped, setSkipped] = useState(true);
-  const { data: products } = useGetProductQuery(category, {
-    skip: !skipped,
-  });
+  const [search, setSearch] = useState();
+  const { products, totalPages } = useGetProductQuery(
+    { category, page, search },
+    {
+      skip: !skipped,
+      selectFromResult: ({ data }) => ({
+        totalPages: data?.totalPages,
+        products: data?.products,
+      }),
+    }
+  );
   const { data: customers } = useGetCustomersQuery();
   const [buyProduct, { isSuccess, isError, error }] = useBuyProductMutation();
   const [customerId, setCustomerId] = useState();
@@ -25,20 +35,34 @@ const Home = () => {
   const [cartProducts, setCartProducts] = useState([]);
   const [customerName, setCustomerName] = useState();
   const [submitMoney, setSubmitMoney] = useState();
-  console.log(products)
   useEffect(() => {
     setSkipped(true);
     return () => setSkipped(false);
-  }, [category]);
-
+  }, [category, page, search]);
+  useEffect(() => {
+    setPage(1);
+  }, [category, search]);
   useEffect(() => {
     if (isSuccess) {
-      cartProducts.map((el) => {
-        el.quantity = "";
-        el.totalAmount = "";
+      const carts = cartProducts.map((el) => {
+        // el.quantity = "";
+        // el.totalAmount = "";
+        return {
+          buyPrice: el.buyPrice,
+          i: el.i,
+          name: el.name,
+          price: el.price,
+          productCategory: el.productCategory,
+          productId: el.productId,
+          quantity: "",
+          storeQuantity: el.storeQuantity,
+          totalAmount: "",
+          totalBuyAmount: el.totalBuyAmount,
+        };
       });
+      setCartProducts(carts);
     } else if (isError) {
-      console.log(error.data)
+      console.log(error.data);
     }
   }, [isSuccess, isError]);
 
@@ -75,7 +99,6 @@ const Home = () => {
     }
     setCartProducts(copyCartProducts.filter((el) => el.quantity > 0));
   };
-  console.log(cartProducts);
   const soldHandler = (e) => {
     let cartObj = {
       customer: customerId?.split(",")[0],
@@ -115,35 +138,61 @@ const Home = () => {
     });
     if (cartObj.quantity?.length > 0) {
       let isNegativeValue = false;
-      console.log(cartObj);
       cartObj.quantity.map((el) => {
         if (el <= 0) {
           isNegativeValue = true;
         }
 
         cartProducts.map((el, i) => {
-          console.log(el)
-          const product = products.find(item => item.name === el.name)
-          if (product.quantity < el.quantity) {
+          if (el.storeQuantity < el.quantity) {
             isNegativeValue = true;
           }
         });
       });
       if (!isNegativeValue) {
-        buyProduct({ ...cartObj, category });
+        buyProduct({ ...cartObj, category, page });
       }
     }
+    console.log(cartProducts.filter((el) => el.quantity > 0).length);
   };
   const submitMoneyHandler = (e) => {
     setSubmitMoney(e.target.value);
   };
+  const doSearch = (e) => {
+    if (e.target.value.length > 0) {
+      setCategory("all");
+    }
+    setSearch(e.target.value);
+  };
+  console.log(search);
   return (
     <div className={style.products}>
-      <div style={{ display: "flex", gap: "2rem" }}>
-        <div onClick={(e) => setCategory("all")}>All</div>
-        {categories?.categories?.map((el) => (
-          <div onClick={categoryHandler}>{el.category}</div>
-        ))}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <div style={{ display: "flex", gap: "2rem" }}>
+          <div
+            style={{ color: category === "all" ? "red" : "black" }}
+            onClick={(e) => setCategory("all")}
+          >
+            All
+          </div>
+          {categories?.categories?.map((el) => (
+            <div
+              style={{ color: category === el.category ? "red" : "black" }}
+              onClick={categoryHandler}
+            >
+              {el.category}
+            </div>
+          ))}
+        </div>
+        <div>
+          <input type="text" value={search} onChange={doSearch} />
+        </div>
       </div>
       <select
         onChange={(e) => {
@@ -172,7 +221,7 @@ const Home = () => {
       </select>
       &nbsp;
       {products?.map((el, i) => {
-        console.log(el)
+        console.log(el);
         return (
           <div key={el._id} className={style.product_box}>
             <h1>
@@ -208,6 +257,7 @@ const Home = () => {
         {cartProducts
           .filter((pro) => pro.quantity > 0)
           .map((el) => {
+            console.log(el);
             return (
               <div className={style.cartDetailBox}>
                 <p>Name: {el.name}</p>,&nbsp;
@@ -251,8 +301,40 @@ const Home = () => {
           <button onClick={soldHandler}>Sold</button>
         </div>
       </div>
+      <div
+        style={{
+          display: "flex",
+          gap: "1rem",
+          color: "white",
+          fontSize: "1.2rem",
+        }}
+      >
+        {totalPages > 1 &&
+          Array(totalPages)
+            .fill()
+            .map((el, i) => {
+              return (
+                <div
+                  onClick={(e) => setPage(e.target.innerText * 1)}
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    background: page === i + 1 ? "red" : "",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: "50%",
+                    cursor: "pointer",
+                  }}
+                >
+                  {i + 1}
+                </div>
+              );
+            })}
+      </div>
     </div>
   );
 };
 
 export default Home;
+/* eslint-enable array-callback-return, no-unused-vars, react-hooks/exhaustive-deps */

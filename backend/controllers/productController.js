@@ -14,11 +14,31 @@ exports.createProduct = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getProducts = catchAsyncError(async (req, res, next) => {
-  const limit = req.query.limit ? Number(req.query.limit) : 3;
+  console.log(req.query);
+  //   const limit = req.query.limit ? Number(req.query.limit) : 3;
+  const limit = req.query.limit;
   const query = Product.find();
-  let products = new ApiFeature(query, req.query).filter().pagination(limit);
+  let products = new ApiFeature(query, req.query)
+    .filter()
+    .pagination(limit)
+    .search();
   products = await products.query;
-  const totalProducts = await Product.countDocuments();
+  const queryObj = {};
+  if (req.query.productCategory) {
+    queryObj.productCategory = req.query.productCategory;
+  } else {
+    delete Object(queryObj)[req.query.productCategory];
+  }
+  const totalProducts = await Product.find({
+    ...queryObj,
+    name: { $regex: req.query.keyword, $options: "i" },
+  }).countDocuments();
+  let searchProductLength = 0;
+  if (req.query.keyword) {
+    searchProductLength = products.length;
+  }
+  console.log("38", searchProductLength);
+  console.log(totalProducts);
   res.status(201).json({
     status: "success",
     totalProducts,

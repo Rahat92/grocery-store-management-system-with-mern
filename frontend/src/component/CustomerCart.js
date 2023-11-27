@@ -416,7 +416,6 @@ const CustomerCart = () => {
         </thead>
         <tbody className={style.customerStatBody}>
           {myProducts.map((el) => {
-            console.log(el);
             return (
               <tr>
                 <td style={{ width: "25%", minWidth: "120px" }}>
@@ -454,7 +453,7 @@ const CustomerCart = () => {
                             <span
                               style={{
                                 display: "inline-block",
-                                padding: "1rem",
+                                padding: "0 1rem",
                               }}
                             >
                               {el.name}
@@ -474,7 +473,7 @@ const CustomerCart = () => {
                             <span
                               style={{
                                 display: "inline-block",
-                                padding: "1rem",
+                                padding: "0 1rem",
                               }}
                             >
                               {el.price}
@@ -494,7 +493,7 @@ const CustomerCart = () => {
                             <span
                               style={{
                                 display: "inline-block",
-                                padding: "1rem",
+                                padding: "0 1rem",
                               }}
                             >
                               {el.quantity}
@@ -514,7 +513,7 @@ const CustomerCart = () => {
                             <span
                               style={{
                                 display: "inline-block",
-                                padding: "1rem",
+                                padding: "0 1rem",
                               }}
                             >
                               {el.totalAmount}
@@ -525,12 +524,12 @@ const CustomerCart = () => {
                     })}
                   </table>
                 </td>
-                <td style={{ padding: "1rem" }}>
+                <td style={{ padding: "0 1rem" }}>
                   {el.products
                     .map((el) => el.totalAmount)
                     ?.reduce((f, c) => f + c)}
                 </td>
-                <td style={{ padding: "1rem" }}>
+                <td style={{ padding: "0 1rem" }}>
                   {el.payAmount ===
                   el.products
                     .map((el) => el.totalAmount)
@@ -538,7 +537,7 @@ const CustomerCart = () => {
                     ? "Clear"
                     : el.payAmount}
                 </td>
-                <td style={{ padding: "1rem" }}>
+                <td style={{ padding: "0 1rem" }}>
                   {el.products
                     .map((el) => el.totalAmount)
                     .reduce((f, c) => f + c, 0) - el.payAmount}
