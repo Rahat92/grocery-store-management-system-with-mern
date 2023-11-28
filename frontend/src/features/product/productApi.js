@@ -4,7 +4,7 @@ const productApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getProduct: builder.query({
       query: ({ category, page, search }) => {
-        const limit = 2;
+        const limit = 10;
         const rootUrl = `/products?page=${page}&limit=${limit}&keyword=${
           search ? search : ""
         }${category !== "all" ? `&productCategory=${category}` : ""}`;
@@ -13,6 +13,7 @@ const productApi = apiSlice.injectEndpoints({
           url: rootUrl,
         };
       },
+
       providesTags: (result, err, args) => [
         { type: "getProducts", category: args },
       ],

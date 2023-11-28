@@ -13,13 +13,24 @@ import {
 import { Link } from "react-router-dom";
 const Home = () => {
   const { data: categories } = useGetCategoriesQuery();
-  console.log(categories);
   const [category, setCategory] = useState("all");
   const [page, setPage] = useState(1);
   const [skipped, setSkipped] = useState(true);
-  const [search, setSearch] = useState();
+  const [search, setSearch] = useState("");
+  const [typing, setTyping] = useState(false);
+  console.log(
+    !isNaN(search[search.length - 1])
+      ? search.slice(0, search.length - 1)
+      : search
+  );
   const { products, totalPages } = useGetProductQuery(
-    { category, page, search },
+    {
+      category,
+      page,
+      search: !isNaN(search[search.length - 1])
+        ? search.slice(0, search.length - 1)
+        : search,
+    },
     {
       skip: !skipped,
       selectFromResult: ({ data }) => ({
@@ -38,15 +49,13 @@ const Home = () => {
   useEffect(() => {
     setSkipped(true);
     return () => setSkipped(false);
-  }, [category, page, search]);
+  }, [category, page, search, typing]);
   useEffect(() => {
     setPage(1);
   }, [category, search]);
   useEffect(() => {
     if (isSuccess) {
       const carts = cartProducts.map((el) => {
-        // el.quantity = "";
-        // el.totalAmount = "";
         return {
           buyPrice: el.buyPrice,
           i: el.i,
@@ -61,6 +70,7 @@ const Home = () => {
         };
       });
       setCartProducts(carts);
+      setSearch("");
     } else if (isError) {
       console.log(error.data);
     }
@@ -97,6 +107,7 @@ const Home = () => {
     } else {
       copyCartProducts = [...copyCartProducts, cartProductObj];
     }
+    console.log(copyCartProducts);
     setCartProducts(copyCartProducts.filter((el) => el.quantity > 0));
   };
   const soldHandler = (e) => {
@@ -121,7 +132,6 @@ const Home = () => {
           : submitMoney,
     };
     cartProducts.map((el, i) => {
-      console.log(el);
       el.quantity && cartObj.productName.push(el.name);
       el.quantity && cartObj.productId.push(el.productId);
       el.quantity && cartObj.quantity.push(Number(el.quantity));
@@ -153,7 +163,6 @@ const Home = () => {
         buyProduct({ ...cartObj, category, page });
       }
     }
-    console.log(cartProducts.filter((el) => el.quantity > 0).length);
   };
   const submitMoneyHandler = (e) => {
     setSubmitMoney(e.target.value);
@@ -164,7 +173,68 @@ const Home = () => {
     }
     setSearch(e.target.value);
   };
-  console.log(search);
+  console.log(products);
+  useEffect(() => {
+    if (search && typing && products?.length === 1) {
+      let givenQuantity;
+      if (isNaN(search[search.length - 1]) === false) {
+        givenQuantity = search[search.length - 1] * 1;
+      }
+      console.log(givenQuantity);
+      const product = products[0];
+      // const modifiedProduct = { ...product, takeQuantity: 8, totalAmount:product.price*5 }
+      // setCartProducts([modifiedProduct])
+      const {
+        _id: productId,
+        name,
+        price,
+        quantity,
+        buyPrice,
+        productCategory,
+      } = product;
+      console.log(product);
+      const existQuantity = cartProducts?.find(
+        (item) => item.name === name
+      )?.quantity;
+      const existTotalAmount = cartProducts?.find(
+        (item) => item.name === name
+      )?.totalAmount;
+      console.log(existQuantity);
+      const cartProductObj = {
+        productId,
+        // i,
+        name,
+        productCategory,
+        price,
+        buyPrice,
+        storeQuantity: quantity,
+        quantity: quantity ? givenQuantity || existQuantity : "",
+        totalBuyAmount: buyPrice * givenQuantity || buyPrice * existQuantity,
+        totalAmount: price * givenQuantity || existTotalAmount,
+      };
+      console.log(cartProductObj);
+      let copyCartProducts = [...cartProducts];
+      const index = copyCartProducts.findIndex((el) => el.name === name);
+      if (index !== -1) {
+        copyCartProducts[index] = cartProductObj;
+      } else {
+        copyCartProducts = [...copyCartProducts, cartProductObj];
+      }
+      console.log(copyCartProducts);
+      if (index !== -1 && givenQuantity === 0) {
+        const obj = copyCartProducts[index];
+        copyCartProducts[index] = { ...obj, quantity: "" };
+      }
+      setCartProducts(copyCartProducts.filter((el) => el.quantity > 0));
+    }
+  }, [search, products]);
+
+  useEffect(() => {
+    if (search) {
+      setTyping(true);
+    }
+    return () => setTyping(false);
+  }, [search]);
   return (
     <div className={style.products}>
       <div
@@ -221,7 +291,6 @@ const Home = () => {
       </select>
       &nbsp;
       {products?.map((el, i) => {
-        console.log(el);
         return (
           <div key={el._id} className={style.product_box}>
             <h1>
