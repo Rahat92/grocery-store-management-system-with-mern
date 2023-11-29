@@ -208,7 +208,7 @@ const Home = () => {
         price,
         buyPrice,
         storeQuantity: quantity,
-        quantity: quantity ? givenQuantity || existQuantity : "",
+        quantity: quantity > 0 ? givenQuantity || existQuantity : "",
         totalBuyAmount: buyPrice * givenQuantity || buyPrice * existQuantity,
         totalAmount: price * givenQuantity || existTotalAmount,
       };
@@ -218,17 +218,29 @@ const Home = () => {
       if (index !== -1) {
         copyCartProducts[index] = cartProductObj;
       } else {
-        copyCartProducts = [...copyCartProducts, cartProductObj];
+        if (cartProductObj.quantity > 0) {
+          copyCartProducts = [...copyCartProducts, cartProductObj];
+        }
       }
-      console.log(copyCartProducts);
+      // if (index !== -1 && givenQuantity === 0) {
+      //   copyCartProducts.splice(index, 1);
+      //   // alert("hi");
+      // }
       if (index !== -1 && givenQuantity === 0) {
         const obj = copyCartProducts[index];
-        copyCartProducts[index] = { ...obj, quantity: "" };
+        console.log(obj);
+        copyCartProducts[index] = {
+          ...obj,
+          quantity: "",
+          totalAmount: 0,
+          totalBuyAmount: 0,
+        };
       }
-      setCartProducts(copyCartProducts.filter((el) => el.quantity > 0));
+      console.log(copyCartProducts);
+      setCartProducts(copyCartProducts);
     }
   }, [search, products]);
-
+  console.log(cartProducts);
   useEffect(() => {
     if (search) {
       setTyping(true);
