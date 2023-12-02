@@ -12,18 +12,22 @@ const Products = () => {
   const { data: categories } = useGetCategoriesQuery();
   console.log(categories);
   const [openCreateProductModal, setOpenCreateProductModal] = useState(false);
-  const { products, totalPages } = useGetProductQuery({category:'all',page:1}, {
-    // skip: !skipped,
-    selectFromResult: ({ data }) => ({
-      totalPages: data?.totalPages,
-      products: data?.products,
-    }),
-  });
+  const { products, totalPages } = useGetProductQuery(
+    { category: "all", page: 1 },
+    {
+      // skip: !skipped,
+      selectFromResult: ({ data }) => ({
+        totalPages: data?.totalPages,
+        products: data?.products,
+      }),
+    }
+  );
   const openAddProductModal = () => {
     setOpenCreateProductModal(true);
   };
   const [formValue, setFormValue] = useState({
     name: "",
+    photo: "",
     buyPrice: "",
     price: "",
     quantity: "",
@@ -36,6 +40,20 @@ const Products = () => {
     }
   }, [isSuccess]);
   console.log(formValue);
+  const addProductHandler = (e) => {
+    e.preventDefault();
+    const formValue = new FormData();
+    formValue.append("name", e.target.name.value);
+    formValue.append("photo", e.target.photo.files[0]);
+    formValue.append("buyPrice", e.target.buyPrice.value);
+    formValue.append("price", e.target.price.value);
+    formValue.append("quantity", e.target.quantity.value);
+    formValue.append("category", e.target.category.value.split("-")[0]);
+    formValue.append("productCategory", e.target.category.value.split("-")[1]);
+    console.log(formValue, e.target.name.value);
+    createProduct(formValue);
+  };
+  console.log(formValue)
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh" }}>
       {openCreateProductModal ? (
@@ -63,17 +81,13 @@ const Products = () => {
               alignItems: "center",
             }}
           >
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                createProduct(formValue);
-              }}
-            >
+            <form onSubmit={addProductHandler}>
               <div>
                 <label>Product Name</label>
               </div>
               <input
                 type="text"
+                name="name"
                 value={formValue.name}
                 onChange={(e) => {
                   setFormValue({ ...formValue, name: e.target.value });
@@ -83,6 +97,7 @@ const Products = () => {
                 <label>Buying Price</label>
               </div>
               <input
+                name="buyPrice"
                 type="Number"
                 onChange={(e) => {
                   setFormValue({ ...formValue, buyPrice: e.target.value * 1 });
@@ -92,6 +107,7 @@ const Products = () => {
                 <label>Product Price</label>
               </div>
               <input
+                name="price"
                 type="Number"
                 onChange={(e) => {
                   setFormValue({ ...formValue, price: e.target.value * 1 });
@@ -101,6 +117,7 @@ const Products = () => {
                 <label>Product Quantity</label>
               </div>
               <input
+                name="quantity"
                 type="Number"
                 onChange={(e) => {
                   setFormValue({ ...formValue, quantity: e.target.value * 1 });
@@ -108,6 +125,7 @@ const Products = () => {
               />
               <div>
                 <select
+                  name="category"
                   onChange={(e) => {
                     setFormValue({
                       ...formValue,
@@ -129,6 +147,13 @@ const Products = () => {
                   })}
                 </select>
               </div>
+              <input
+                name="photo"
+                type="file"
+                onChange={(e) =>
+                  setFormValue({ ...formValue, photo: e.target.files[0] })
+                }
+              />
               <div>
                 <button type="submit">Add Product</button>
               </div>
@@ -167,7 +192,13 @@ const Products = () => {
           {products?.map((el, i) => {
             return (
               <tr>
-                <td>{el.photo}</td>
+                <td>
+                  <img
+                    src={`http://localhost:5000/public/img/product/${el.photo}`}
+                    width="100px"
+                    height="100px"
+                  />
+                </td>
                 <td>{el.name}</td>
                 <td>{el.price}</td>
                 <td>{el.quantity}</td>

@@ -29,6 +29,7 @@ const CustomerCart = () => {
     totalBuyAmount,
     totalDue,
     allSubmitMoney,
+    isLoading
   } = useGetCustomerBikrisQuery(
     { customerId, page },
     {
@@ -53,7 +54,7 @@ const CustomerCart = () => {
     }
     setTotalPages(pagesArr);
   }, [pages]);
-
+  console.log(isLoading)
   const [myProducts, setMyProducts] = useState([]);
   const [dates, setDates] = useState([]);
   const [total, setTotal] = useState();

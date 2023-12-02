@@ -1,11 +1,11 @@
 const express = require('express');
-const { createProduct, getProducts, getProduct, getProductStat, getStats, monthLyStat, updateProduct } = require('../controllers/productController');
+const { createProduct, getProducts, getProduct, getProductStat, getStats, monthLyStat, updateProduct, uploadProductPhoto, resizeProductPhoto } = require('../controllers/productController');
 const { protect, restrictedTo } = require('../controllers/userController');
 const router = express.Router()
 
 router
     .route('/')
-    .post(createProduct)
+    .post(uploadProductPhoto,resizeProductPhoto,createProduct)
     .get(getProducts)
 
 router

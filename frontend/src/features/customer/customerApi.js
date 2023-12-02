@@ -8,6 +8,13 @@ const customerApi = apiSlice.injectEndpoints({
         getCustomers: builder.query({
             query: () => `/customers`
         }),
+        createCustomer: builder.mutation({
+            query: (body) => ({
+                url: `/customers`,
+                method: 'POST',
+                body:body
+            })
+        })
     })
 })
-export const {useGetCustomerQuery, useGetCustomersQuery} = customerApi
+export const {useGetCustomerQuery, useGetCustomersQuery, useCreateCustomerMutation} = customerApi

@@ -16,8 +16,17 @@ const Home = () => {
   const [category, setCategory] = useState("all");
   const [page, setPage] = useState(1);
   const [skipped, setSkipped] = useState(true);
+  const [skippedGetCustomer, setSkippedGetCustomer] = useState(false);
   const [search, setSearch] = useState("");
   const [typing, setTyping] = useState(false);
+  const [clickOnQuantity, setClickOnQuantity] = useState(false);
+  const [cartProductId, setCartProductId] = useState(null);
+  const [message, setMessage] = useState({
+    cartArrElement: {
+      id: '',
+      message:''
+    }
+  })
   console.log(
     !isNaN(search[search.length - 1])
       ? search.slice(0, search.length - 1)
@@ -39,13 +48,24 @@ const Home = () => {
       }),
     }
   );
+  console.log(products);
   const { data: customers } = useGetCustomersQuery();
   const [buyProduct, { isSuccess, isError, error }] = useBuyProductMutation();
   const [customerId, setCustomerId] = useState();
   const [cartValues, setCartValues] = useState([]);
   const [cartProducts, setCartProducts] = useState([]);
-  const [customerName, setCustomerName] = useState();
+  const [customerName, setCustomerName] = useState({});
   const [submitMoney, setSubmitMoney] = useState();
+  const { data: customer } = useGetCustomerQuery(customerName.id, {
+    skip: !skippedGetCustomer,
+  });
+  console.log(customer);
+  useEffect(() => {
+    if (customerName.id) {
+      setSkippedGetCustomer(true);
+    }
+    return () => setSkippedGetCustomer(false);
+  }, [customerName.id]);
   useEffect(() => {
     setSkipped(true);
     return () => setSkipped(false);
@@ -156,6 +176,14 @@ const Home = () => {
         cartProducts.map((el, i) => {
           if (el.storeQuantity < el.quantity) {
             isNegativeValue = true;
+            cartProducts[i].quantity = el.storeQuantity
+            setCartProducts([...cartProducts])
+            // setMessage({
+            //   cartArrElement: {
+            //     id: el.productId,
+            //     message:'Quantity is more than storage.'
+            //   }
+            // })
           }
         });
       });
@@ -164,6 +192,7 @@ const Home = () => {
       }
     }
   };
+  console.log(message)
   const submitMoneyHandler = (e) => {
     setSubmitMoney(e.target.value);
   };
@@ -236,7 +265,6 @@ const Home = () => {
           totalBuyAmount: 0,
         };
       }
-      console.log(copyCartProducts);
       setCartProducts(copyCartProducts);
     }
   }, [search, products]);
@@ -247,175 +275,490 @@ const Home = () => {
     }
     return () => setTyping(false);
   }, [search]);
+
+  const removeCartItem = (name) => {
+    const index = cartProducts.findIndex((item) => item.name === name);
+    const obj = cartProducts[index];
+    cartProducts[index] = {
+      ...obj,
+      quantity: "",
+      totalAmount: 0,
+      totalBuyAmount: 0,
+    };
+    setCartProducts([...cartProducts]);
+  };
+  const quantityHandler = (id) => {
+    setCartProductId(id);
+    setClickOnQuantity(true);
+  };
+  const updateCartQuantityHandler = (e, name) => {
+    const index = cartProducts.findIndex((item) => item.name === name);
+    const obj = cartProducts[index];
+    cartProducts[index] = {
+      ...obj,
+      quantity: e.target.value * 1 === 0 ? "" : e.target.value * 1,
+      totalAmount: obj.price * e.target.value * 1,
+    };
+    setCartProducts([...cartProducts]);
+  };
   return (
-    <div className={style.products}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <div style={{ display: "flex", gap: "2rem" }}>
-          <div
-            style={{ color: category === "all" ? "red" : "black" }}
-            onClick={(e) => setCategory("all")}
-          >
-            All
-          </div>
-          {categories?.categories?.map((el) => (
-            <div
-              style={{ color: category === el.category ? "red" : "black" }}
-              onClick={categoryHandler}
-            >
-              {el.category}
+    <div>
+      <div className={style.products}>
+        {/* <select
+          onChange={(e) => {
+            setCustomerName({
+              name: e.target.value.split(",")[1],
+              id: e.target.value.split(",")[0],
+            });
+            setCartValues([
+              ...cartValues.map((el) => {
+                return {
+                  quantity: el.quantity,
+                  customer: e.target.value.split(",")[0],
+                };
+              }),
+            ]);
+            setCustomerId(e.target.value);
+          }}
+        >
+          <option value="" hidden selected>
+            Select Customer
+          </option>
+          {customers?.customers?.length > 0 &&
+            customers.customers.map((el) => (
+              <option value={el._id + "," + el.name}>{el.name}</option>
+            ))}
+        </select>
+        &nbsp;
+        {products?.map((el, i) => {
+          return (
+            <div key={el._id} className={style.product_box}>
+              <h1>
+                Name: {el.name}, Price: {el.price}, Quantity: {el.quantity}
+              </h1>
+              <form>
+                <input
+                  type="number"
+                  max={el.quantity}
+                  disabled={el.quantity === 0}
+                  onChange={(e) => numberHandler(e, i, el)}
+                  value={
+                    cartProducts &&
+                    cartProducts.find((product) => product.name === el.name)
+                      ?.quantity
+                  }
+                  placeholder={
+                    el.quantity === 0
+                      ? `No ${el.name} found in store`
+                      : "Quantity"
+                  }
+                />
+                &nbsp;
+              </form>
             </div>
-          ))}
-        </div>
-        <div>
-          <input type="text" value={search} onChange={doSearch} />
-        </div>
-      </div>
-      <select
-        onChange={(e) => {
-          setCustomerName({
-            name: e.target.value.split(",")[1],
-            id: e.target.value.split(",")[0],
-          });
-          setCartValues([
-            ...cartValues.map((el) => {
-              return {
-                quantity: el.quantity,
-                customer: e.target.value.split(",")[0],
-              };
-            }),
-          ]);
-          setCustomerId(e.target.value);
-        }}
-      >
-        <option value="" hidden selected>
-          Select Customer
-        </option>
-        {customers?.customers?.length > 0 &&
-          customers.customers.map((el) => (
-            <option value={el._id + "," + el.name}>{el.name}</option>
-          ))}
-      </select>
-      &nbsp;
-      {products?.map((el, i) => {
-        return (
-          <div key={el._id} className={style.product_box}>
-            <h1>
-              Name: {el.name}, Price: {el.price}, Quantity: {el.quantity}
-            </h1>
-            <form>
+          );
+        })}
+        <div className={style.cartDetail}>
+          <h1 className={style.customerName}>
+            Customer Name:
+            <Link to={`customer/${customerName?.id}`}>
+              {customerName?.name}
+            </Link>
+          </h1>
+          {cartProducts
+            .filter((pro) => pro.quantity > 0)
+            .map((el, i) => {
+              console.log(el);
+              return (
+                <div key={el.name} className={style.cartDetailBox}>
+                  <p>Name: {el.name}</p>,&nbsp;
+                  <p>Price: {el.price}</p>,&nbsp;
+                  {clickOnQuantity && cartProductId === el.productId ? (
+                    <>
+                      Quantity:
+                      <input
+                        onChange={(e) => updateCartQuantityHandler(e, el.name)}
+                        style={{ width: "50px", textAlign: "center" }}
+                        value={el.quantity}
+                        type={"number"}
+                      />
+                    </>
+                  ) : (
+                    <p onClick={() => quantityHandler(el.productId)}>
+                      Quantity: {el.quantity}
+                    </p>
+                  )}
+                  ,&nbsp;
+                  <p>Total amount: {el.totalAmount}</p>
+                  <p onClick={() => removeCartItem(el.name)}>Cancel</p>
+                </div>
+              );
+            })}
+          <div className={style.customerName}>&nbsp;</div>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div>
+              In Total:{" "}
+              {cartProducts
+                ?.map((el) => Number(el.totalAmount))
+                .reduce((f, c) => f + c, 0)}
+            </div>
+            <div>
+              <label>মোট প্রদত্ত টাকা</label>&nbsp;
               <input
-                type="number"
-                max={el.quantity}
-                disabled={el.quantity === 0}
-                onChange={(e) => numberHandler(e, i, el)}
-                value={
-                  cartProducts &&
-                  cartProducts.find((product) => product.name === el.name)
-                    ?.quantity
-                }
-                placeholder={
-                  el.quantity === 0
-                    ? `No ${el.name} found in store`
-                    : "Quantity"
-                }
+                type="text"
+                value={submitMoney}
+                onChange={submitMoneyHandler}
               />
-              &nbsp;
-            </form>
-          </div>
-        );
-      })}
-      <div className={style.cartDetail}>
-        <h1 className={style.customerName}>
-          Customer Name:
-          <Link to={`customer/${customerName?.id}`}>{customerName?.name}</Link>
-        </h1>
-        {cartProducts
-          .filter((pro) => pro.quantity > 0)
-          .map((el) => {
-            console.log(el);
-            return (
-              <div className={style.cartDetailBox}>
-                <p>Name: {el.name}</p>,&nbsp;
-                <p>Price: {el.price}</p>,&nbsp;
-                <p>Quantity: {el.quantity}</p>,&nbsp;
-                <p>Total amount: {el.totalAmount}</p>
+              <div>
+                {submitMoney ? (
+                  <p>
+                    ফেরতযোগ্য টাকাঃ{" "}
+                    {submitMoney -
+                      cartProducts
+                        ?.map((el) => Number(el.totalAmount))
+                        .reduce((f, c) => f + c, 0)}
+                  </p>
+                ) : (
+                  ""
+                )}
               </div>
-            );
-          })}
-        <div className={style.customerName}>&nbsp;</div>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div>
-            In Total:{" "}
-            {cartProducts
-              ?.map((el) => Number(el.totalAmount))
-              .reduce((f, c) => f + c, 0)}
+            </div>
           </div>
           <div>
-            <label>মোট প্রদত্ত টাকা</label>&nbsp;
+            <button onClick={soldHandler}>Sold</button>
+          </div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            gap: "1rem",
+            color: "white",
+            fontSize: "1.2rem",
+          }}
+        >
+          {totalPages > 1 &&
+            Array(totalPages)
+              .fill()
+              .map((el, i) => {
+                return (
+                  <div
+                    onClick={(e) => setPage(e.target.innerText * 1)}
+                    style={{
+                      width: "30px",
+                      height: "30px",
+                      background: page === i + 1 ? "red" : "",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: "50%",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {i + 1}
+                  </div>
+                );
+              })}
+        </div> */}
+      </div>
+
+      {/* updated design */}
+      <div style={{ width: "90%", margin: "0 auto" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "2rem",
+          }}
+        >
+          <div style={{ display: "flex", gap: "2rem" }}>
+            <div
+              style={{
+                color: category === "all" ? "red" : "black",
+                cursor: "pointer",
+              }}
+              onClick={(e) => setCategory("all")}
+            >
+              All
+            </div>
+            {categories?.categories?.map((el) => (
+              <div
+                style={{
+                  color: category === el.category ? "red" : "black",
+                  cursor: "pointer",
+                }}
+                onClick={categoryHandler}
+              >
+                {el.category}
+              </div>
+            ))}
+          </div>
+          <div>
             <input
               type="text"
-              value={submitMoney}
-              onChange={submitMoneyHandler}
+              value={search}
+              onChange={doSearch}
+              placeholder="Search"
             />
+          </div>
+        </div>
+
+        <div style={{ display: "flex" }}>
+          <div style={{ flex: "0 0 20%", height: "300px" }}>
+            <select
+              style={{ width: "100%", color: "black" }}
+              onChange={(e) => {
+                setCustomerName({
+                  name: e.target.value.split(",")[1],
+                  id: e.target.value.split(",")[0],
+                });
+                setCartValues([
+                  ...cartValues.map((el) => {
+                    return {
+                      quantity: el.quantity,
+                      customer: e.target.value.split(",")[0],
+                    };
+                  }),
+                ]);
+                setCustomerId(e.target.value);
+              }}
+            >
+              <option value="default" hidden selected>
+                Select Customer
+              </option>
+              {customers?.customers?.length > 0 &&
+                customers.customers.map((el) => (
+                  <option value={el._id + "," + el.name}>{el.name}</option>
+                ))}
+            </select>
             <div>
-              {submitMoney ? (
-                <p>
-                  ফেরতযোগ্য টাকাঃ{" "}
-                  {submitMoney -
-                    cartProducts
-                      ?.map((el) => Number(el.totalAmount))
-                      .reduce((f, c) => f + c, 0)}
-                </p>
+              {customer?.customer?.photo ? (
+                <div>
+                  <Link to={`/customer/${customer.customer._id}`}>
+                    <figcaption>
+                      <img
+                        src={`http://localhost:5000/public/img/customer/${customer.customer.photo}`}
+                      />
+                      <caption>{customer.customer.name}</caption>
+                    </figcaption>
+                  </Link>
+                </div>
               ) : (
                 ""
               )}
             </div>
           </div>
+
+          {/* render products */}
+          <div style={{ flex: "0 0 50%", padding: "0 2rem" }}>
+            <h1>Our Products</h1>
+            <table style={{ width: "100%" }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: "left" }}>Image</th>
+                  <th style={{ textAlign: "left" }}>Name</th>
+                  <th style={{ textAlign: "left" }}>Price</th>
+                  <th style={{ textAlign: "left" }}>Quantity</th>
+                  <th style={{ textAlign: "left" }}>Sell Quantity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products?.map((el, i) => {
+                  return (
+                    <tr key={el._id} style={{ border: "2px solid black" }}>
+                      <td>
+                        <img
+                          src={`http://localhost:5000/public/img/product/${el.photo}`}
+                          width="50px"
+                          height="50px"
+                        />
+                      </td>
+                      <td>{el.name}</td>
+                      <td>{el.price}</td>
+                      <td>{el.quantity}</td>
+                      <td style={{ width: "80px" }}>
+                        <input
+                          style={{ width: "80px" }}
+                          type="number"
+                          max={el.quantity}
+                          disabled={el.quantity === 0}
+                          onChange={(e) => numberHandler(e, i, el)}
+                          value={
+                            cartProducts &&
+                            cartProducts.find(
+                              (product) => product.name === el.name
+                            )?.quantity
+                          }
+                          placeholder={el.quantity === 0 ? `Empty` : "Quantity"}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div style={{ flex: "0 0 30%" }}>
+            <h1>Selected Products</h1>
+            {cartProducts.filter((el) => el.quantity > 0).length > 0 && (
+              <table style={{ width: "100%" }}>
+                <thead>
+                  <tr>
+                    <th style={{ textAlign: "left" }}>Name</th>
+                    <th style={{ textAlign: "left" }}></th>
+                    <th style={{ textAlign: "center" }}>Quantity</th>
+                    <th style={{ textAlign: "right" }}>TotalAmount</th>
+                  </tr>
+                </thead>
+                {console.log(cartProductId)}
+                <tbody>
+                  {cartProducts
+                    .filter((pro) => pro.quantity > 0)
+                    .map((el, i) => {
+                      return (
+                        <tr onMouseOver={() => setCartProductId(el.productId)}>
+                          <td>{el.name}</td>
+                          <td
+                            onClick={() => removeCartItem(el.name)}
+                            style={{
+                              opacity:
+                                cartProductId === el.productId ? "1" : "0",
+                              cursor: "pointer",
+                            }}
+                          >
+                            X
+                          </td>
+                          <td
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                            }}
+                          >
+                            {/* {clickOnQuantity && cartProductId === el.productId ? (
+                            <>
+                              <input
+                                onChange={(e) =>
+                                  updateCartQuantityHandler(e, el.name)
+                                }
+                                style={{ width: "50px", textAlign: "center" }}
+                                value={el.quantity}
+                                type={"number"}
+                              />
+                            </>
+                          ) : (
+                            <p onClick={() => quantityHandler(el.productId)}>
+                              {el.quantity}
+                            </p>
+                          )} */}
+                            <input
+                              onChange={(e) =>
+                                updateCartQuantityHandler(e, el.name)
+                              }
+                              style={{
+                                color: "white",
+                                width: "60px",
+                                outline: "none",
+                                border: "none",
+                                background: "none",
+                                textAlign: "center",
+                              }}
+                              type="number"
+                              value={el.quantity}
+                            />
+                          </td>
+                          <td style={{ textAlign: "right" }}>
+                            {el.totalAmount}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  {cartProducts.filter((el) => el.quantity > 0).length > 0 && (
+                    <tr>
+                      <td colSpan={4} style={{ textAlign: "center" }}>
+                        <button
+                          onClick={soldHandler}
+                          style={{ background: "red", width: "100%" }}
+                        >
+                          Sell{" "}
+                          {cartProducts
+                            ?.map((el) => Number(el.totalAmount))
+                            .reduce((f, c) => f + c, 0)}{" "}
+                          টাকা
+                        </button>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            )}
+            {/* {cartProducts
+              .filter((pro) => pro.quantity > 0)
+              .map((el, i) => {
+                console.log(el);
+                return (
+                  <div key={el.name} className={style.cartDetailBox}>
+                    <p>Name: {el.name}</p>,&nbsp;
+                    <p>Price: {el.price}</p>,&nbsp;
+                    {clickOnQuantity && cartProductId === el.productId ? (
+                      <>
+                        Quantity:
+                        <input
+                          onChange={(e) =>
+                            updateCartQuantityHandler(e, el.name)
+                          }
+                          style={{ width: "50px", textAlign: "center" }}
+                          value={el.quantity}
+                          type={"number"}
+                        />
+                      </>
+                    ) : (
+                      <p onClick={() => quantityHandler(el.productId)}>
+                        Quantity: {el.quantity}
+                      </p>
+                    )}
+                    ,&nbsp;
+                    <p>Total amount: {el.totalAmount}</p>
+                    <p onClick={() => removeCartItem(el.name)}>Cancel</p>
+                  </div>
+                );
+              })} */}
+          </div>
         </div>
-        <div>
-          <button onClick={soldHandler}>Sold</button>
+        <div
+          style={{
+            display: "flex",
+            marginTop: "2rem",
+            gap: "1rem",
+            color: "white",
+            fontSize: "1.2rem",
+          }}
+        >
+          {totalPages > 1 &&
+            Array(totalPages)
+              .fill()
+              .map((el, i) => {
+                return (
+                  <div
+                    onClick={(e) => setPage(e.target.innerText * 1)}
+                    style={{
+                      width: "30px",
+                      height: "30px",
+                      background: page === i + 1 ? "red" : "",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: "50%",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {i + 1}
+                  </div>
+                );
+              })}
         </div>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          gap: "1rem",
-          color: "white",
-          fontSize: "1.2rem",
-        }}
-      >
-        {totalPages > 1 &&
-          Array(totalPages)
-            .fill()
-            .map((el, i) => {
-              return (
-                <div
-                  onClick={(e) => setPage(e.target.innerText * 1)}
-                  style={{
-                    width: "30px",
-                    height: "30px",
-                    background: page === i + 1 ? "red" : "",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: "50%",
-                    cursor: "pointer",
-                  }}
-                >
-                  {i + 1}
-                </div>
-              );
-            })}
       </div>
     </div>
   );
 };
 
 export default Home;
-/* eslint-enable array-callback-return, no-unused-vars, react-hooks/exhaustive-deps */

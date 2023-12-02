@@ -7,6 +7,10 @@ const customerSchema = new mongoose.Schema(
       unique: true,
       required: [true, "must have a customer name"],
     },
+    photo: {
+      type: String,
+      required:[true, 'Must have a customer photo']
+    },
     phoneNo: {
       type: String,
       required: [true, "You must have to provide a unique number"],

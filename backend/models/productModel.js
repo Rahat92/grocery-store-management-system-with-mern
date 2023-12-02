@@ -10,6 +10,10 @@ const productSchema = new mongoose.Schema(
       ref: "Category",
       required: [true, "Must have a Category"],
     },
+    photo: {
+      type: String,
+      required: [true, "Must have a Product Photo"],
+    },
     productCategory: {
       type: String,
       required: [true, "Must have a Product Category"],

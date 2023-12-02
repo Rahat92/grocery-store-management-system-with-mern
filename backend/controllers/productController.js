@@ -1,8 +1,38 @@
+const multer = require("multer");
 const Product = require("../models/productModel");
 const ApiFeature = require("../uitls/apiFeatures");
 const catchAsyncError = require("../utils/catchAsyncError");
+const AppError = require("../uitls/AppError");
+const sharp = require("sharp");
 
+const multerStorage = multer.memoryStorage();
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Only image you can upload", 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+exports.uploadProductPhoto = upload.single("photo");
+exports.resizeProductPhoto = (req, res, next) => {
+  if (!req.file) return next;
+  req.file.filename = `product-${Date.now()}.jpeg`;
+  sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat("jpeg")
+    .jpeg({ quantity: 90 })
+    .toFile(`public/img/product/${req.file.filename}`);
+  next();
+};
 exports.createProduct = catchAsyncError(async (req, res, next) => {
+    if (req.file) {
+        req.body.photo=req.file.filename
+    }
   console.log(req.body);
   const product = await (
     await Product.create(req.body)
@@ -33,11 +63,7 @@ exports.getProducts = catchAsyncError(async (req, res, next) => {
     ...queryObj,
     name: { $regex: req.query.keyword, $options: "i" },
   }).countDocuments();
-  let searchProductLength = 0;
-  if (req.query.keyword) {
-    searchProductLength = products.length;
-  }
-  console.log("38", searchProductLength);
+
   console.log(totalProducts);
   res.status(201).json({
     status: "success",
