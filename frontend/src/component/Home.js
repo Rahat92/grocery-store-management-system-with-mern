@@ -21,12 +21,7 @@ const Home = () => {
   const [typing, setTyping] = useState(false);
   const [clickOnQuantity, setClickOnQuantity] = useState(false);
   const [cartProductId, setCartProductId] = useState(null);
-  const [message, setMessage] = useState({
-    cartArrElement: {
-      id: '',
-      message:''
-    }
-  })
+  const [quantityMessage, setQuantityMessage] = useState([]);
   console.log(
     !isNaN(search[search.length - 1])
       ? search.slice(0, search.length - 1)
@@ -130,6 +125,70 @@ const Home = () => {
     console.log(copyCartProducts);
     setCartProducts(copyCartProducts.filter((el) => el.quantity > 0));
   };
+
+  useEffect(() => {
+    let cartObj = {
+      customer: customerId?.split(",")[0],
+      customerId: customerId?.split(",")[0],
+      productName: [],
+      productId: [],
+      totalBuyAmount: [],
+      productBuyPrice: [],
+      productPrice: [],
+      quantity: [],
+      totalAmount: [],
+      categories: ["all"],
+      payAmount:
+        cartProducts
+          ?.map((el) => Number(el.totalAmount))
+          .reduce((f, c) => f + c, 0) <= submitMoney
+          ? cartProducts
+              ?.map((el) => Number(el.totalAmount))
+              .reduce((f, c) => f + c, 0)
+          : submitMoney,
+    };
+    cartProducts.map((el, i) => {
+      el.quantity && cartObj.productName.push(el.name);
+      el.quantity && cartObj.productId.push(el.productId);
+      el.quantity && cartObj.quantity.push(Number(el.quantity));
+      el.quantity && cartObj.totalAmount.push(Number(el.totalAmount));
+      el.quantity && cartObj.productBuyPrice.push(Number(el.buyPrice));
+      el.quantity && cartObj.productPrice.push(Number(el.price));
+      el.quantity && cartObj.totalBuyAmount.push(Number(el.totalBuyAmount));
+      const categoryIndex = cartObj.categories.findIndex(
+        (item) => item === el.productCategory
+      );
+      if (categoryIndex === -1) {
+        cartObj.categories.push(el.productCategory);
+      }
+    });
+    if (cartObj.quantity?.length > 0) {
+      // let isNegativeValue = false;
+      cartObj.quantity.map((el) => {
+        // if (el <= 0) {
+        //   isNegativeValue = true;
+        // }
+        let messages = [];
+        cartProducts.map((el, i) => {
+          console.log(el);
+          if (el.quantity && el.storeQuantity < el.quantity) {
+            // isNegativeValue = true;
+            const message = {
+              id: el.productId,
+              message: "To many " + el.name,
+            };
+            messages.push(message);
+          }
+        });
+        setQuantityMessage(messages);
+      });
+    }
+    if (cartProducts.length === 0) {
+      setQuantityMessage([]);
+    }
+  }, [cartProducts, cartProducts.length]);
+  console.log(cartProducts);
+  console.log(quantityMessage);
   const soldHandler = (e) => {
     let cartObj = {
       customer: customerId?.split(",")[0],
@@ -176,8 +235,8 @@ const Home = () => {
         cartProducts.map((el, i) => {
           if (el.storeQuantity < el.quantity) {
             isNegativeValue = true;
-            cartProducts[i].quantity = el.storeQuantity
-            setCartProducts([...cartProducts])
+            cartProducts[i].quantity = el.storeQuantity;
+            setCartProducts([...cartProducts]);
             // setMessage({
             //   cartArrElement: {
             //     id: el.productId,
@@ -192,7 +251,6 @@ const Home = () => {
       }
     }
   };
-  console.log(message)
   const submitMoneyHandler = (e) => {
     setSubmitMoney(e.target.value);
   };
@@ -268,7 +326,6 @@ const Home = () => {
       setCartProducts(copyCartProducts);
     }
   }, [search, products]);
-  console.log(cartProducts);
   useEffect(() => {
     if (search) {
       setTyping(true);
@@ -578,7 +635,10 @@ const Home = () => {
                       <td>{el.quantity}</td>
                       <td style={{ width: "80px" }}>
                         <input
-                          style={{ width: "80px" }}
+                          style={{
+                            width: "80px",
+                            textAlign: "center",
+                          }}
                           type="number"
                           max={el.quantity}
                           disabled={el.quantity === 0}
@@ -591,6 +651,10 @@ const Home = () => {
                           }
                           placeholder={el.quantity === 0 ? `Empty` : "Quantity"}
                         />
+                        {quantityMessage.find((item) => item.id === el.id)
+                          ? quantityMessage.find((item) => item.id === el.id)
+                              .message
+                          : ""}
                       </td>
                     </tr>
                   );
@@ -600,6 +664,11 @@ const Home = () => {
           </div>
           <div style={{ flex: "0 0 30%" }}>
             <h1>Selected Products</h1>
+            {cartProducts.filter((el) => el.quantity > 0).length === 0 && (
+              <div>
+                <p>No product is selected Yet</p>
+              </div>
+            )}
             {cartProducts.filter((el) => el.quantity > 0).length > 0 && (
               <table style={{ width: "100%" }}>
                 <thead>
@@ -616,7 +685,10 @@ const Home = () => {
                     .filter((pro) => pro.quantity > 0)
                     .map((el, i) => {
                       return (
-                        <tr onMouseOver={() => setCartProductId(el.productId)}>
+                        <tr
+                          onMouseOut={() => setCartProductId("")}
+                          onMouseOver={() => setCartProductId(el.productId)}
+                        >
                           <td>{el.name}</td>
                           <td
                             onClick={() => removeCartItem(el.name)}

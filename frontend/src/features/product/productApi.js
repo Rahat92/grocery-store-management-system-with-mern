@@ -4,7 +4,7 @@ const productApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getProduct: builder.query({
       query: ({ category, page, search }) => {
-        const limit = 3;
+        const limit = 2;
         const rootUrl = `/products?page=${page}&limit=${limit}&keyword=${
           search ? search : ""
         }${category !== "all" ? `&productCategory=${category}` : ""}`;
@@ -41,7 +41,7 @@ const productApi = apiSlice.injectEndpoints({
         body: data,
       }),
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
-        console.log(args)
+        console.log(args);
         try {
           const { data: newProduct } = await queryFulfilled;
           console.log(newProduct);
