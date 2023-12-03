@@ -71,7 +71,7 @@ const bikriSchema = new mongoose.Schema(
     customer: {
       type: mongoose.Schema.ObjectId,
       ref: "Customer",
-      required: [true, "must have a customer under a cart"],
+      // required: [true, "must have a customer under a cart"],
     },
   },
   {

@@ -22,6 +22,7 @@ const Home = () => {
   const [clickOnQuantity, setClickOnQuantity] = useState(false);
   const [cartProductId, setCartProductId] = useState(null);
   const [quantityMessage, setQuantityMessage] = useState([]);
+  const [isChecked, setIsChecked] = useState('off')
   console.log(
     !isNaN(search[search.length - 1])
       ? search.slice(0, search.length - 1)
@@ -43,13 +44,16 @@ const Home = () => {
       }),
     }
   );
-  console.log(products);
   const { data: customers } = useGetCustomersQuery();
   const [buyProduct, { isSuccess, isError, error }] = useBuyProductMutation();
   const [customerId, setCustomerId] = useState();
   const [cartValues, setCartValues] = useState([]);
   const [cartProducts, setCartProducts] = useState([]);
-  const [customerName, setCustomerName] = useState({});
+  const [customerName, setCustomerName] = useState({
+    name: 'default',
+    id:null
+  });
+  console.log(cartValues)
   const [submitMoney, setSubmitMoney] = useState();
   const { data: customer } = useGetCustomerQuery(customerName.id, {
     skip: !skippedGetCustomer,
@@ -246,7 +250,15 @@ const Home = () => {
           }
         });
       });
+      console.log(customerName)
+      
+      if (isChecked === 'off' && customerName.name==='default') {
+        alert('No Customer selected, Please Select a customer')
+        return
+      }
+      console.log(isChecked)
       if (!isNegativeValue) {
+        console.log(cartObj)
         buyProduct({ ...cartObj, category, page });
       }
     }
@@ -358,6 +370,17 @@ const Home = () => {
     };
     setCartProducts([...cartProducts]);
   };
+
+  const checkboxHandler = (e) => {
+    setIsChecked(prev => {
+      if (prev === 'off') {
+        return 'on'
+      } else {
+        return 'off'
+      }
+    })
+  }
+  console.log(isChecked)
   return (
     <div>
       <div className={style.products}>
@@ -559,28 +582,32 @@ const Home = () => {
             />
           </div>
         </div>
-
+        {console.log(customerName)}
         <div style={{ display: "flex" }}>
           <div style={{ flex: "0 0 20%", height: "300px" }}>
             <select
               style={{ width: "100%", color: "black" }}
               onChange={(e) => {
+                setIsChecked('off')
                 setCustomerName({
-                  name: e.target.value.split(",")[1],
-                  id: e.target.value.split(",")[0],
+                  name:
+                    e.target.value !== "default"
+                      ? e.target.value.split(",")[1]
+                      : "default",
+                  id: e.target.value!=='default'?e.target.value.split(",")[0]:null,
                 });
-                setCartValues([
-                  ...cartValues.map((el) => {
-                    return {
-                      quantity: el.quantity,
-                      customer: e.target.value.split(",")[0],
-                    };
-                  }),
-                ]);
-                setCustomerId(e.target.value);
+                // setCartValues([
+                //   ...cartValues.map((el) => {
+                //     return {
+                //       quantity: el.quantity,
+                //       customer: e.target.value.split(",")[0],
+                //     };
+                //   }),
+                // ]);
+                setCustomerId(e.target.value!=='default'?e.target.value.split(",")[0]:null);
               }}
             >
-              <option value="default" hidden selected>
+              <option value="default" selected>
                 Select Customer
               </option>
               {customers?.customers?.length > 0 &&
@@ -589,7 +616,7 @@ const Home = () => {
                 ))}
             </select>
             <div>
-              {customer?.customer?.photo ? (
+              {customerName.name !== "default" && customer?.customer?.photo ? (
                 <div>
                   <Link to={`/customer/${customer.customer._id}`}>
                     <figcaption>
@@ -601,7 +628,11 @@ const Home = () => {
                   </Link>
                 </div>
               ) : (
-                ""
+                <div>
+                  <h1>No Name Selected</h1>
+                  <input type="checkbox" onChange={checkboxHandler} id="check" />{" "}
+                  <label htmlFor="check">Cart Without Customer</label>
+                </div>
               )}
             </div>
           </div>
@@ -609,58 +640,64 @@ const Home = () => {
           {/* render products */}
           <div style={{ flex: "0 0 50%", padding: "0 2rem" }}>
             <h1>Our Products</h1>
-            <table style={{ width: "100%" }}>
-              <thead>
-                <tr>
-                  <th style={{ textAlign: "left" }}>Image</th>
-                  <th style={{ textAlign: "left" }}>Name</th>
-                  <th style={{ textAlign: "left" }}>Price</th>
-                  <th style={{ textAlign: "left" }}>Quantity</th>
-                  <th style={{ textAlign: "left" }}>Sell Quantity</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products?.map((el, i) => {
-                  return (
-                    <tr key={el._id} style={{ border: "2px solid black" }}>
-                      <td>
-                        <img
-                          src={`http://localhost:5000/public/img/product/${el.photo}`}
-                          width="50px"
-                          height="50px"
-                        />
-                      </td>
-                      <td>{el.name}</td>
-                      <td>{el.price}</td>
-                      <td>{el.quantity}</td>
-                      <td style={{ width: "80px" }}>
-                        <input
-                          style={{
-                            width: "80px",
-                            textAlign: "center",
-                          }}
-                          type="number"
-                          max={el.quantity}
-                          disabled={el.quantity === 0}
-                          onChange={(e) => numberHandler(e, i, el)}
-                          value={
-                            cartProducts &&
-                            cartProducts.find(
-                              (product) => product.name === el.name
-                            )?.quantity
-                          }
-                          placeholder={el.quantity === 0 ? `Empty` : "Quantity"}
-                        />
-                        {quantityMessage.find((item) => item.id === el.id)
-                          ? quantityMessage.find((item) => item.id === el.id)
-                              .message
-                          : ""}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            {!products ? (
+              <h1>Products is loading</h1>
+            ) : (
+              <table style={{ width: "100%" }}>
+                <thead>
+                  <tr>
+                    <th style={{ textAlign: "left" }}>Image</th>
+                    <th style={{ textAlign: "left" }}>Name</th>
+                    <th style={{ textAlign: "left" }}>Price</th>
+                    <th style={{ textAlign: "left" }}>Quantity</th>
+                    <th style={{ textAlign: "left" }}>Sell Quantity</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products?.map((el, i) => {
+                    return (
+                      <tr key={el._id} style={{ border: "1rem solid white" }}>
+                        <td>
+                          <img
+                            src={`http://localhost:5000/public/img/product/${el.photo}`}
+                            width="50px"
+                            height="50px"
+                          />
+                        </td>
+                        <td>{el.name}</td>
+                        <td>{el.price}</td>
+                        <td>{el.quantity}</td>
+                        <td style={{ width: "80px" }}>
+                          <input
+                            style={{
+                              width: "80px",
+                              textAlign: "center",
+                            }}
+                            type="number"
+                            max={el.quantity}
+                            disabled={el.quantity === 0}
+                            onChange={(e) => numberHandler(e, i, el)}
+                            value={
+                              cartProducts &&
+                              cartProducts.find(
+                                (product) => product.name === el.name
+                              )?.quantity
+                            }
+                            placeholder={
+                              el.quantity === 0 ? `Empty` : "Quantity"
+                            }
+                          />
+                          {quantityMessage.find((item) => item.id === el.id)
+                            ? quantityMessage.find((item) => item.id === el.id)
+                                .message
+                            : ""}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
           </div>
           <div style={{ flex: "0 0 30%" }}>
             <h1>Selected Products</h1>
