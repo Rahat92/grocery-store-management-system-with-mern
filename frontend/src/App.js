@@ -7,12 +7,15 @@ import Products from "./component/Products";
 import SellStats from "./component/SellStats";
 import CategoryProducts from "./component/CategoryProducts";
 import YearlyCustomersSell from "./component/YearlyCustomerSells";
+import AdminDashboard from "./component/AdminDashboard";
 const App = () => {
   return (
     <>
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+
           <Route path="/customers" element={<Customers />} />
           <Route path="/products" element={<Products />} />
           <Route

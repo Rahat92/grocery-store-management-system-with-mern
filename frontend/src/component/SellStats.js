@@ -230,6 +230,7 @@ const SellStats = () => {
                               style={{
                                 display: "inline-block",
                                 padding: ".4rem",
+                                opacity: ".5",
                               }}
                             >
                               {el.price}
@@ -250,6 +251,8 @@ const SellStats = () => {
                               style={{
                                 display: "inline-block",
                                 padding: ".4rem",
+                                fontWeight: "bold",
+                                color: "black",
                               }}
                             >
                               {el.quantity} টি
@@ -270,6 +273,8 @@ const SellStats = () => {
                               style={{
                                 display: "inline-block",
                                 padding: ".4rem",
+                                fontWeight: "bold",
+                                color: "black",
                               }}
                             >
                               {el.profit}

@@ -11,6 +11,7 @@ import {
   useGetCategoriesQuery,
 } from "../features/bikri/bikriApi";
 import { Link } from "react-router-dom";
+import { readableDate } from "../utils/readableDate";
 const Home = () => {
   const { data: categories } = useGetCategoriesQuery();
   const [category, setCategory] = useState("all");
@@ -381,6 +382,57 @@ const Home = () => {
     })
   }
   console.log(isChecked)
+
+
+  // test month array//
+  let monthLength = 0;
+  let month = new Date().getMonth()
+  console.log(month)
+  switch (month) {
+    case 0:
+      monthLength = 31;
+    case 1:
+      monthLength = 29
+    case 2:
+      monthLength = 31
+    case 3: 
+      monthLength = 30
+    case 4:
+      monthLength = 31
+    case 5:
+      monthLength = 30
+    case 6:
+      monthLength = 31 //july
+    case 7:
+      monthLength = 31 //august
+    case 8:
+      monthLength = 30
+    case 9:
+      monthLength = 31 //octobar
+    case 10:
+      monthLength = 30
+    case 11:
+      monthLength = 31
+      break;
+    default:
+      monthLength = 0
+  }
+  const [dates, setDates] = useState([])
+  useEffect(() => {
+    let days = []
+    for (let i = 1; i <= monthLength; i++){
+      const time = readableDate(new Date(2023, month, i))
+      console.log(time)
+      const readableYear = time.year;
+      const readableMonth = time.month;
+      const readableDay = time.day
+      days.push({
+        date:`${readableDay} ${readableMonth} ${readableYear}`
+      })
+    }
+    console.log(days)
+  }, [])
+  
   return (
     <div>
       <div className={style.products}>
@@ -616,7 +668,7 @@ const Home = () => {
                 ))}
             </select>
             <div>
-              {customerName.name !== "default" && customer?.customer?.photo ? (
+              {customerName.name !== "default" && customer?.customer?.name ? (
                 <div>
                   <Link to={`/customer/${customer.customer._id}`}>
                     <figcaption>

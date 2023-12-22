@@ -8,6 +8,7 @@ import { useGetCustomerBikrisQuery } from "../features/bikri/bikriApi";
 
 const Customers = () => {
   const { data: customers } = useGetCustomersQuery();
+  console.log(customers)
   const [createCustomer, {}] = useCreateCustomerMutation();
   const [addCustomerButtonClick, setAddCustomerButtonClick] = useState(false);
   const [formValue, setFormValue] = useState({

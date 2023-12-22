@@ -23,13 +23,15 @@ exports.createBikri = catchAsyncError(async (req, res, next) => {
     const msg = storeMessage.join(",");
     return next(new AppError(`No ${msg} Found in store`, 400));
   }
-  const quantity = products.map((el, i) => {
-    if (el.quantity < req.body.quantity[i]) {
-      return el.name
-    }
-  }).filter(el=>el!==undefined)
+  const quantity = products
+    .map((el, i) => {
+      if (el.quantity < req.body.quantity[i]) {
+        return el.name;
+      }
+    })
+    .filter((el) => el !== undefined);
   if (quantity.length > 0) {
-    return next(new AppError(`Too Much product ${quantity.join(',')}`, 400))
+    return next(new AppError(`Too Much product ${quantity.join(",")}`, 400));
   }
   const newBikri = await Bikri.create(req.body);
   res.status(201).json({
@@ -58,6 +60,13 @@ exports.sellerBikriStatsYearly = catchAsyncError(async (req, res) => {
         cartAt: {
           $gte: new Date(`${year}-01-01`),
           $lte: new Date(`${year}-12-31`),
+        },
+      },
+    },
+    {
+      $match: {
+        customerId: {
+          $ne: undefined,
         },
       },
     },
@@ -97,21 +106,25 @@ exports.sellerBikriStatsYearly = catchAsyncError(async (req, res) => {
         productBuyPrice: { $arrayElemAt: ["$x", 6] },
         cartAt: 1,
         customerId: 1,
+        password: 1,
       },
     },
     {
       $group: {
         _id: "$customerId",
         totalAmount: { $push: "$totalAmount" },
+        month: { $push: { $month: "$cartAt" } },
       },
     },
   ]);
   const customers = await Promise.all(
     customerBikri.map(async (el) => {
-      return await Customer.findById(el._id).select("name phoneNo -_id");
+      return await Customer.findById(el._id).select(
+        "name phoneNo -_id password"
+      );
     })
   );
-  console.log(customers);
+  console.log(customerBikri);
   res.status(200).json({
     status: "Success",
     customers,
@@ -166,6 +179,7 @@ exports.customerBikri = catchAsyncError(async (req, res, next) => {
 
 exports.customerBikriStatsMonthly = catchAsyncError(async (req, res, next) => {
   const year = req.params.year;
+  console.log("good");
   const customerBikri = await Bikri.aggregate([
     {
       $match: {

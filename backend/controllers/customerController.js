@@ -2,6 +2,8 @@ const multer = require("multer");
 const sharp = require("sharp");
 const Customer = require("../models/customerModel");
 const AppError = require("../uitls/AppError");
+const jwt = require("jsonwebtoken");
+const { promisify } = require("util");
 const catchAsyncError = require("../utils/catchAsyncError");
 const { getCustomerCart } = require("./cartController");
 
@@ -30,15 +32,88 @@ exports.resizeCustomerPhoto = (req, res, next) => {
     .toFile(`public/img/customer/${req.file.filename}`);
   next();
 };
+const tokenProducer = (id) => {
+  return jwt.sign({ id }, process.env.SECRET_KEY, {
+    expiresIn: process.env.EXPIRE_TOKEN,
+  });
+};
+const resAndSendToken = (user, res, statusCode) => {
+  const token = tokenProducer(user._id);
+  const cookieOptions = {
+    expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+    httpOnly: true,
+  };
+  res.cookie("token", token, cookieOptions);
+  if (process.env.NODE_ENV === "PRODUCTION") cookieOptions.secure = true;
+  res.status(statusCode).json({
+    status: "success",
+    token,
+    user,
+  });
+};
+
+exports.protect = catchAsyncError(async (req, res, next) => {
+  console.log("hello world");
+  const { token } = req.cookies;
+  if (!token)
+    return next(
+      new AppError(`You are now not logged in, Please log in first`, 400)
+    );
+  const decoded = await promisify(jwt.verify)(token, process.env.SECRET_KEY);
+  console.log(decoded);
+  const currentUser = await Customer.findById(decoded.id);
+  if (!currentUser)
+    return next(
+      new AppError(`The user belonging this token is no longer exist`, 400)
+    );
+  if (currentUser.isPasswordChanged(decoded.iat))
+    return next(
+      new AppError(
+        `The user changed password after issuing this  token, Please log in again`,
+        400
+      )
+    );
+  req.user = currentUser;
+  next();
+});
+
+exports.restrictedTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role))
+      return next(
+        new AppError(`You are not allowed to perform this action`, 400)
+      );
+    next();
+  };
+};
+
 exports.createCustomer = catchAsyncError(async (req, res, next) => {
-    if (req.file) {
-        req.body.photo = req.file.filename
-    }
+  if (req.file) {
+    req.body.photo = req.file.filename;
+  }
   const customer = await Customer.create(req.body);
   res.status(201).json({
     status: "success",
     customer,
   });
+});
+
+exports.signUp = catchAsyncError(async (req, res, next) => {
+  console.log(req.body)
+  if (req.file) {
+    req.body.photo = req.file.filename;
+  }
+  const { name, email, password, passwordConfirm, photo, phoneNo } = req.body;
+  const user = await Customer.create({
+    name,
+    photo,
+    phoneNo,
+    email,
+    password,
+    passwordConfirm,
+  });
+  console.log(user);
+  resAndSendToken(user, res, 201);
 });
 
 exports.getCustomer = catchAsyncError(async (req, res, next) => {

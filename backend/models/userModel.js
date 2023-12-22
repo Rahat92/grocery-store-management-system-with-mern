@@ -37,21 +37,15 @@ const userSchema = new mongoose.Schema({
     passwordChangeAt: Date
 })
 
-// userSchema.pre('save', function (next) {
-//     if (!this.isModified('password') || this.isNew) return next();
-//     this.passwordChangeAt = Date.now()-1000
-// })
+userSchema.pre('save', function (next) {
+    if (!this.isModified('password') || this.isNew) return next();
+    this.passwordChangeAt = Date.now()-1000
+})
 userSchema.methods.isPasswordMatched = async function (candidatePass) {
     console.log('my pass: ', candidatePass, this);
     return await bcrypt.compare(candidatePass, this.password)
 }
 
-// userSchema.methods.isPasswordChanged = function (jwtTimeStamp) {
-//     if (this.passwordChangeAt) {
-//         const passwordChangeTime = parseInt(this.passwordChangeAt / 1000, 10)
-//         return passwordChangeTime > jwtTimeStamp
-//     }
-// }
 userSchema.methods.isPasswordChanged = function(jwtTimeStamp){
     if(this.passwordChangeAt){
         const passwordChangedAt = parseInt(this.passwordChangeAt/1000, 10)

@@ -29,7 +29,7 @@ const bikriSchema = new mongoose.Schema(
         required: [true, "must have a product name"],
       },
     ],
-
+    
     productId: [
       {
         type: String,

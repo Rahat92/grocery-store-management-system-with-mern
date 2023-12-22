@@ -61,7 +61,7 @@ const bikriApi = apiSlice.injectEndpoints({
     }),
     getCustomerBikris: builder.query({
       query: ({ customerId, page }) =>
-        `/bikri/customer/${customerId}?page=${page}&limit=10`,
+        `/bikri/customer/${customerId}?page=${page}&limit=30`,
       transformResponse: (response) => {
         console.log(response);
         const customerBikri = response.customerBikri.sort((a, b) => {
@@ -109,5 +109,5 @@ export const {
   useCreateCategoryMutation,
   useGetCategoriesQuery,
   useGetCategoryQuery,
-  useGetCustomerSellYearQuery
+  useGetCustomerSellYearQuery,
 } = bikriApi;
