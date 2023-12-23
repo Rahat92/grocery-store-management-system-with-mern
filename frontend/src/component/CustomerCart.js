@@ -29,7 +29,7 @@ const CustomerCart = () => {
     totalBuyAmount,
     totalDue,
     allSubmitMoney,
-    isLoading
+    isLoading,
   } = useGetCustomerBikrisQuery(
     { customerId, page },
     {
@@ -54,7 +54,7 @@ const CustomerCart = () => {
     }
     setTotalPages(pagesArr);
   }, [pages]);
-  console.log(isLoading)
+  console.log(isLoading);
   const [myProducts, setMyProducts] = useState([]);
   const [dates, setDates] = useState([]);
   const [total, setTotal] = useState();
@@ -113,161 +113,7 @@ const CustomerCart = () => {
   }, [window.scrollY, window.pageYOffset]);
   console.log(y);
   return (
-    // <div style={{ position: "relative" }}>
-    //   <div
-    //     style={{ border: "5px solid green", padding: "1rem", color: "black" }}
-    //   >
-    //     <p style={{ color: "red" }}>
-    //       কাস্টমারের নামঃ {customer?.customer?.name}
-    //     </p>
-
-    //     <p style={{ color: "red" }}>মোট বিক্রিঃ {totalCartAmount || 0} টাকা</p>
-    //     <p style={{ color: "red" }}>
-    //       মোট ক্রয়মুল্যঃ {totalBuyAmount || 0} টাকা
-    //     </p>
-    //     <p style={{ color: "red" }}>মোট জমাঃ {payments?.totalPayments} টাকা</p>
-    //     <p style={{ color: "red" }}>বাকিঃ {totalDue} টাকা</p>
-    //     <select onChange={productChange}>
-    //       <option hidden>Select A value</option>
-    //       {products?.map((el) => {
-    //         return <option value={el.name}>{el.name}</option>;
-    //       })}
-    //     </select>
-    //     <p style={{ color: "red" }}>
-    //       <Link to={`statistics`}>Monthly Statics</Link>
-    //     </p>
-    //     {totalCartAmount > payments?.totalPayments && (
-    //       <p style={{ color: "red" }}>
-    //         বাকিঃ {totalCartAmount - payments?.totalPayments} টাকা
-    //       </p>
-    //     )}
-    //     <div
-    //       style={{
-    //         display: "flex",
-    //         gap: "5rem",
-    //         justifyContent: "space-between",
-    //         padding: "1rem",
-    //       }}
-    //     >
-    //       <div style={{ flex: "0 0 20%" }}>বিক্রির সময়</div>
-    //       <div style={{ flex: "0 0 10%" }}>পণ্যের তালিকা</div>
-    //       <div style={{ flex: "0 0 10%" }}>মুল্য</div>
-    //       <div style={{ flex: "0 0 10%" }}>পরিমান</div>
-    //       <div style={{ flex: "0 0 10%" }}>মোট মুল্য</div>
-    //       <div style={{ flex: "0 0 10%" }}>সর্বমোট মুল্য</div>
-    //     </div>
-    //     {myProducts.map((el, i) => {
-    //       return (
-    //         <div
-    //           style={{
-    //             display: "flex",
-    //             gap: "5rem",
-    //             alignItems: "center",
-    //             padding: "1rem",
-    //             justifyContent: "space-between",
-    //             flex: "1",
-    //             marginBottom: "1rem",
-    //             border: "1px solid black",
-    //           }}
-    //         >
-    //           <div style={{ flex: "0 0 20%" }}>
-    //             {el.cartAt.day} {el.cartAt.month} {el.cartAt.year} at{" "}
-    //             {el.cartAt.readableTime}
-    //           </div>
-    //           <div style={{ flex: "0 0 10%" }}>
-    //             {el.products.map((el) => (
-    //               <div style={{ width: "100px", padding: ".8rem 0" }}>
-    //                 {el.name}
-    //               </div>
-    //             ))}
-    //           </div>
-    //           <div style={{ flex: "0 0 10%" }}>
-    //             {el.products.map((el) => (
-    //               <div style={{ padding: ".8rem 0" }}>{el.price}</div>
-    //             ))}
-    //           </div>
-    //           <div style={{ flex: "0 0 10%" }}>
-    //             {el.products.map((el) => (
-    //               <div style={{ padding: ".8rem 0" }}>{el.quantity}</div>
-    //             ))}
-    //           </div>
-    //           <div style={{ flex: "0 0 10%" }}>
-    //             {el.products.map((el) => (
-    //               <div style={{ padding: ".8rem 0" }}>
-    //                 {el.totalAmount} taka
-    //               </div>
-    //             ))}
-    //           </div>
-    //           <div style={{ flex: "0 0 10%" }}>
-    //             {el.products
-    //               .map((el) => el.totalAmount)
-    //               ?.reduce((f, c) => f + c)}{" "}
-    //             টাকা
-    //           </div>
-    //           <div style={{ flex: "0 0 10%" }}>
-    //             {el.products
-    //               .map((el) => el.totalBuyAmount)
-    //               ?.reduce((f, c) => f + c)}{" "}
-    //             টাকা
-    //           </div>
-    //           <div style={{ flex: "0 0 10%" }}>
-    //             {el.products
-    //               .map((el) => el.totalAmount)
-    //               ?.reduce((f, c) => f + c) -
-    //               el.products
-    //                 .map((el) => el.totalBuyAmount)
-    //                 ?.reduce((f, c) => f + c)}{" "}
-    //             taka
-    //           </div>
-    //           <div>{el.isPaid ? "Payment Clear" : "Due Amount"}</div>
-    //         </div>
-    //       );
-    //     })}
-    //     <div style={{ display: "flex", justifyContent: "flex-end" }}>
-    //       Page: {pages}
-    //     </div>
-    //     <div
-    //       style={{
-    //         display: "flex",
-    //         gap: "1rem",
-    //         justifyContent: "center",
-    //         position: "fixed",
-    //         bottom: "2rem",
-    //         left: "50%",
-    //         transform: "translateX(-50%)",
-    //       }}
-    //     >
-    //       {totalPages?.map((el, i) => (
-    //         <button
-    //           style={{
-    //             background: "gray",
-    //             display: "flex",
-    //             backgroundColor: currentPage === i + 1 ? "red" : "",
-    //             width: "25px",
-    //             height: "25px",
-    //             justifyContent: "center",
-    //             borderRadius: "50%",
-    //             alignItems: "center",
-    //           }}
-    //           onClick={() => pageclickHandler(i + 1)}
-    //         >
-    //           {i + 1}
-    //         </button>
-    //       ))}
-    //     </div>
-    //   </div>
-    // </div>
-    //........................//
     <div>
-      {/* <div>
-        <table>
-          <tr>
-            <td>মোট বিক্রি</td>
-            <td>মোট জমা</td>
-            <td>মোট বাকি</td>
-          </tr>
-        </table>
-      </div> */}
       <div>
         <table
           style={{
@@ -423,28 +269,7 @@ const CustomerCart = () => {
                   {el.cartAt.day} {el.cartAt.month} {el.cartAt.year} at{" "}
                   {el.cartAt.readableTime}
                 </td>
-                {/* <td
-                  style={{
-                    width: "15%",
-                    minWidth: "120px",
-                    fontWeight: "bold",
-                    color: "black",
-                  }}
-                >
-                  {el.totalAmount} টাকা
-                </td> */}
-                {/* <td
-                  style={{
-                    width: "15%",
-                    minWidth: "120px",
-                    fontWeight: "bold",
-                    color: "black",
-                    borderRight: "2px solid black",
-                    padding: "1rem",
-                  }}
-                >
-                  {el.totalAmount - el.totalBuyAmount} টাকা
-                </td> */}
+                
                 <td style={{ padding: "0" }}>
                   <table className={style.statTableName}>
                     {el.products.map((el) => {
@@ -543,69 +368,6 @@ const CustomerCart = () => {
                     .map((el) => el.totalAmount)
                     .reduce((f, c) => f + c, 0) - el.payAmount}
                 </td>
-
-                {/* <td style={{ padding: "0" }}>
-                  <table className={style.statTableQuantity}>
-                    {el.products.map((item) => {
-                      return (
-                        <tr>
-                          <td>
-                            <span
-                              style={{
-                                display: "inline-block",
-                                padding: "1rem",
-                              }}
-                            >
-                              {item.products
-                                .map((el) => el.totalAmount)
-                                ?.reduce((f, c) => f + c)}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </table>
-                </td> */}
-                {/* <td>
-                  <table className={style.statTableQuantity}>
-                    {el.stats.map((el) => {
-                      return (
-                        <tr>
-                          <td>
-                            <span
-                              style={{
-                                display: "inline-block",
-                                padding: ".4rem",
-                              }}
-                            >
-                              {el.quantity} টি
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </table>
-                </td> */}
-                {/* <td>
-                  <table className={style.statTableTotalCost}>
-                    {el.stats.map((el) => {
-                      return (
-                        <tr>
-                          <td>
-                            <span
-                              style={{
-                                display: "inline-block",
-                                padding: ".4rem",
-                              }}
-                            >
-                              {el.profit}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </table>
-                </td> */}
               </tr>
             );
           })}
