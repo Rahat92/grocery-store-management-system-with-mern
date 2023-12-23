@@ -10,15 +10,17 @@ import { useGetCustomerPaymentsQuery } from "../features/payments/paymentsApi";
 import { useGetProductQuery } from "../features/product/productApi";
 import { useGetCustomerQuery } from "../features/customer/customerApi";
 const CustomerCart = () => {
+  const timeRef = useRef();
   const headerRef = useRef();
+  const tableRef = useRef();
   const [totalPages, setTotalPages] = useState();
+  const [headerHeight, setHeaderHeight] = useState();
   const [times, setTimes] = useState([]);
   const [y, setY] = useState(0);
   const [page, setPage] = useState(1);
   const [clickPage, setClickPage] = useState(true);
   const [desireProduct, setDesireProduct] = useState();
   const [isScrolled, setIsScrolled] = useState(false);
-  console.log(isScrolled);
   const { customerId } = useParams();
   const { data: customer } = useGetCustomerQuery(customerId);
   const { data: payments } = useGetCustomerPaymentsQuery(customerId);
@@ -56,7 +58,6 @@ const CustomerCart = () => {
     }
     setTotalPages(pagesArr);
   }, [pages]);
-  console.log(isLoading);
   const [myProducts, setMyProducts] = useState([]);
   const [dates, setDates] = useState([]);
   const [total, setTotal] = useState();
@@ -76,7 +77,6 @@ const CustomerCart = () => {
       let products = [];
       let totalAmounts = [];
       customerBikri.map((bikri, i) => {
-        console.log(bikri);
         products.push(
           bikri.productName.map((el, i) => {
             totalAmounts.push(bikri.totalAmount[i]);
@@ -103,7 +103,6 @@ const CustomerCart = () => {
       setMyProducts(final);
     }
   }, [customerBikri]);
-  console.log(myProducts);
   const productChange = (e) => {
     setDesireProduct(e.target.value);
   };
@@ -115,6 +114,9 @@ const CustomerCart = () => {
   }, [window.scrollY, window.pageYOffset]);
   console.log(y);
   useEffect(() => {
+    timeRef.current.scrollTo(0, y);
+  }, [y]);
+  useEffect(() => {
     if (myProducts?.length > 0) {
       const times = myProducts.map((el) => {
         return {
@@ -123,22 +125,34 @@ const CustomerCart = () => {
           products: el.products,
         };
       });
-      console.log(times);
       setTimes(times);
     }
   }, [myProducts]);
-  console.log(times);
   useEffect(() => {
     console.log(headerRef.current.clientHeight);
+    setHeaderHeight(headerRef.current.clientHeight);
   }, [myProducts?.length]);
+  useEffect(() => {
+    console.log(tableRef.current.pageYOffset);
+  }, [window.pageYOffset, window.pageXOffset]);
+  useEffect(() => {
+    window.addEventListener("resize", function () {
+      console.log(headerRef.current.clientHeight);
+      setHeaderHeight(headerRef.current.clientHeight);
+      console.log(window.innerWidth);
+    });
+  }, [window.innerWidth]);
+  console.log(headerHeight);
   return (
     <div>
-      <div ref={headerRef} style={{ position: "fixed", width: "100%" }}>
+      <div
+        ref={headerRef}
+        style={{ position: "fixed", top: "0", width: "100%" }}
+      >
         <table
           style={{
             width: "100%",
             // position: isScrolled ? "fixed" : "absolute",
-            top: "0",
             background: "blue",
           }}
         >
@@ -211,104 +225,18 @@ const CustomerCart = () => {
           </tr>
         </table>
       </div>
-      <table className={style.customerStatTable}>
-        <thead style={{ visibility: "hidden" }}>
-          <tr>
-            <td colSpan={7}>
-              <table style={{ width: "100%" }}>
-                <tr style={{ width: "100%" }}>
-                  <td style={{ padding: "0 1rem" }}>মোট বিক্রিমুল্য</td>
-                  <td>মোট ক্রয়মুল্য</td>
-                  <td>মোট বাকি</td>
-                </tr>
-                <tr>
-                  <td style={{ padding: "0 1rem" }}>{totalCartAmount}</td>
-                  <td>{totalBuyAmount}</td>
-                  <td>{totalDue}</td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr
-            style={{
-              background: "red",
-              color: "black",
-              fontFamily: "sans-serif",
-            }}
-          >
-            <td
-              style={{
-                width: "25%",
-                minWidth: "300px",
-                padding: "1rem",
-              }}
-            >
-              বিক্রির সময়
-            </td>
-            <td
-              style={{
-                width: "15%",
-                minWidth: "120px",
-                padding: "1rem",
-              }}
-            >
-              পন্যের নাম
-            </td>
-            <td
-              style={{
-                width: "15%",
-                minWidth: "120px",
-                padding: "1rem",
-              }}
-            >
-              পন্যের মুল্য
-            </td>
-            <td style={{ width: "15%", minWidth: "120px", padding: "1rem" }}>
-              পন্যের পরিমান
-            </td>
-            <td style={{ width: "15%", minWidth: "120px", padding: "1rem" }}>
-              দাম
-            </td>
-            <td style={{ width: "15%", minWidth: "120px", padding: "1rem" }}>
-              সর্বমোট মুল্য
-            </td>
-            <td style={{ width: "15%", minWidth: "120px", padding: "1rem" }}>
-              পরিশোধ
-            </td>
-            <td style={{ width: "15%", minWidth: "120px", padding: "1rem" }}>
-              বাকি
-            </td>
-          </tr>
-        </thead>
-        <tbody className={style.customerStatBody}>
+      <table
+        ref={tableRef}
+        className={style.customerStatTable}
+        style={{ marginTop: headerHeight, marginLeft: "390px" }}
+      >
+        <tbody
+          className={style.customerStatBody}
+          style={{ marginTop: headerHeight }}
+        >
           {myProducts.map((el) => {
             return (
               <tr>
-                <td style={{ width: "25%", minWidth: "120px" }}>
-                  {el.cartAt.day} {el.cartAt.month} {el.cartAt.year} at{" "}
-                  {el.cartAt.readableTime}
-                </td>
-
-                <td style={{ padding: "0" }}>
-                  <table className={style.statTableName}>
-                    {el.products.map((el) => {
-                      return (
-                        <tr>
-                          <td>
-                            <span
-                              style={{
-                                display: "inline-block",
-                                padding: "0 1rem",
-                              }}
-                            >
-                              {el.name}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </table>
-                </td>
                 <td style={{ padding: "0" }}>
                   <table className={style.statTablePrice}>
                     {el.products.map((el) => {
@@ -394,10 +322,11 @@ const CustomerCart = () => {
       </table>
       {/* ............. */}
       <div
+        ref={timeRef}
         style={{
-          width: "400px",
+          width: "390px",
           position: "fixed",
-          top: "134px",
+          top: headerHeight,
           bottom: 0,
           background: "blue",
           overflowY: "scroll",
@@ -405,7 +334,6 @@ const CustomerCart = () => {
       >
         <table style={{ width: "100%" }}>
           {times?.map((el) => {
-            console.log(el);
             return (
               <tr style={{ padding: "0 1rem", border: "2px solid white" }}>
                 <td
@@ -417,7 +345,7 @@ const CustomerCart = () => {
                   {el.time.day} {el.time.month} {el.time.year} at{" "}
                   {el.time.readableTime}
                 </td>
-                <td style={{ padding: "0" }}>
+                <td style={{ padding: "0", borderLeft: "1px solid black" }}>
                   <table className={style.statTableName}>
                     {el.products.map((el) => {
                       return (
