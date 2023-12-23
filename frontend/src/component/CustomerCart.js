@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   useGetCustomerBikrisQuery,
@@ -10,7 +10,9 @@ import { useGetCustomerPaymentsQuery } from "../features/payments/paymentsApi";
 import { useGetProductQuery } from "../features/product/productApi";
 import { useGetCustomerQuery } from "../features/customer/customerApi";
 const CustomerCart = () => {
+  const headerRef = useRef();
   const [totalPages, setTotalPages] = useState();
+  const [times, setTimes] = useState([]);
   const [y, setY] = useState(0);
   const [page, setPage] = useState(1);
   const [clickPage, setClickPage] = useState(true);
@@ -112,13 +114,30 @@ const CustomerCart = () => {
     return () => setIsScrolled(false);
   }, [window.scrollY, window.pageYOffset]);
   console.log(y);
+  useEffect(() => {
+    if (myProducts?.length > 0) {
+      const times = myProducts.map((el) => {
+        return {
+          tdNo: el.products.length,
+          time: el.cartAt,
+          products: el.products,
+        };
+      });
+      console.log(times);
+      setTimes(times);
+    }
+  }, [myProducts]);
+  console.log(times);
+  useEffect(() => {
+    console.log(headerRef.current.clientHeight);
+  }, [myProducts?.length]);
   return (
     <div>
-      <div>
+      <div ref={headerRef} style={{ position: "fixed", width: "100%" }}>
         <table
           style={{
             width: "100%",
-            position: isScrolled ? "fixed" : "absolute",
+            // position: isScrolled ? "fixed" : "absolute",
             top: "0",
             background: "blue",
           }}
@@ -269,7 +288,7 @@ const CustomerCart = () => {
                   {el.cartAt.day} {el.cartAt.month} {el.cartAt.year} at{" "}
                   {el.cartAt.readableTime}
                 </td>
-                
+
                 <td style={{ padding: "0" }}>
                   <table className={style.statTableName}>
                     {el.products.map((el) => {
@@ -373,6 +392,35 @@ const CustomerCart = () => {
           })}
         </tbody>
       </table>
+      <div
+        style={{
+          width: "300px",
+          position: "fixed",
+          top: "134px",
+          bottom: 0,
+          background: "blue",
+        }}
+      >
+        <table style={{ width: "100%" }}>
+          {times?.map((el) => {
+            console.log(el);
+            return (
+              <tr style={{ padding: "0 1rem" }}>
+                <td
+                  style={{
+                    border: "2px solid white",
+                    width: "100%",
+                    padding: "1px 1rem",
+                  }}
+                >
+                  {el.time.day} {el.time.month} {el.time.year} at{" "}
+                  {el.time.readableTime}
+                </td>
+              </tr>
+            );
+          })}
+        </table>
+      </div>
     </div>
   );
 };
