@@ -392,29 +392,50 @@ const CustomerCart = () => {
           })}
         </tbody>
       </table>
+      {/* ............. */}
       <div
         style={{
-          width: "300px",
+          width: "400px",
           position: "fixed",
           top: "134px",
           bottom: 0,
           background: "blue",
+          overflowY: "scroll",
         }}
       >
         <table style={{ width: "100%" }}>
           {times?.map((el) => {
             console.log(el);
             return (
-              <tr style={{ padding: "0 1rem" }}>
+              <tr style={{ padding: "0 1rem", border: "2px solid white" }}>
                 <td
                   style={{
-                    border: "2px solid white",
                     width: "100%",
                     padding: "1px 1rem",
                   }}
                 >
                   {el.time.day} {el.time.month} {el.time.year} at{" "}
                   {el.time.readableTime}
+                </td>
+                <td style={{ padding: "0" }}>
+                  <table className={style.statTableName}>
+                    {el.products.map((el) => {
+                      return (
+                        <tr style={{}}>
+                          <td>
+                            <span
+                              style={{
+                                display: "inline-block",
+                                padding: "0 1rem",
+                              }}
+                            >
+                              {el.name}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </table>
                 </td>
               </tr>
             );
