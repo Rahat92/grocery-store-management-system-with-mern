@@ -157,23 +157,37 @@ const CustomerCart = () => {
           position: "fixed",
           top: "0",
           padding: "0",
-          background: "blue",
+          background: "",
+          color: "black",
         }}
       >
-        <table style={{ width: "100%" }}>
-          <tr style={{ padding: "0 1rem", border: "2px solid white" }}>
+        <table style={{ width: "100%", color: "black" }}>
+          <tr
+            style={{
+              border: "2px solid black",
+              borderRight: "2px solid black",
+              borderBottom: "0",
+            }}
+          >
             <td
               style={{
                 width: "280px",
                 padding: "0 1rem",
+                height: "100%",
               }}
             >
               সময়
             </td>
-            <td style={{ padding: "0", borderLeft: "1px solid black" }}>
+            <td
+              style={{
+                padding: "0",
+                borderLeft: "1px solid black",
+                // borderRight: "2px solid black",
+              }}
+            >
               <table className={style.statTableName}>
                 <tr style={{}}>
-                  <td>
+                  <td style={{ padding: "2px 0" }}>
                     <span
                       style={{
                         display: "inline-block",
@@ -199,11 +213,14 @@ const CustomerCart = () => {
           left: "410px",
           overflowX: "scroll",
           webkitscrollbar: "none",
-          background: "blue",
+          background: "white",
         }}
       >
-        <table className={style.customerStatTable} style={{ width: "900px" }}>
-          <tbody className={style.customerStatBody}>
+        <table
+          className={style.customerStatTable}
+          style={{ width: "900px", color: "black" }}
+        >
+          <tbody className={style.customerStatBody} style={{ color: "black" }}>
             <tr>
               <td style={{ padding: "0", width: "150px" }}>
                 <table className={style.statTablePrice}>
@@ -224,7 +241,7 @@ const CustomerCart = () => {
               <td
                 style={{
                   padding: "0",
-                  background: "brown",
+                  background: "",
                   width: "150px",
                 }}
               >
@@ -285,7 +302,13 @@ const CustomerCart = () => {
           <tbody className={style.customerStatBody}>
             {myProducts.map((el) => {
               return (
-                <tr>
+                <tr
+                  style={{
+                    border: "2px solid black",
+                    borderLeft: "0",
+                    borderRight: "0",
+                  }}
+                >
                   <td style={{ padding: "0", width: "150px" }}>
                     <table className={style.statTablePrice}>
                       {el.products.map((el) => {
@@ -309,7 +332,7 @@ const CustomerCart = () => {
                   <td
                     style={{
                       padding: "0",
-                      background: "brown",
+                      background: "white",
                       width: "150px",
                     }}
                   >
@@ -384,14 +407,14 @@ const CustomerCart = () => {
           position: "fixed",
           top: headerHeight,
           bottom: 0,
-          background: "blue",
+          background: "",
           overflowY: "scroll",
         }}
       >
-        <table style={{ width: "100%" }}>
+        <table style={{ width: "100%", color: "black" }}>
           {times?.map((el) => {
             return (
-              <tr style={{ padding: "0 1rem", border: "2px solid white" }}>
+              <tr style={{ padding: "0 1rem", border: "2px solid black" }}>
                 <td
                   style={{
                     width: "280px",
