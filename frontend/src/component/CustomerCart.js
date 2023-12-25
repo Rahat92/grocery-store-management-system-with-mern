@@ -147,31 +147,45 @@ const CustomerCart = () => {
   useEffect(() => {
     headerRef.current.scrollLeft = tableScrollXPosition;
   }, [tableScrollXPosition]);
+  console.log(headerHeight);
   return (
     <div>
       <div
         style={{
-          width: "390px",
-          height: headerHeight,
-          // background: "orange",
+          width: "410px",
+          background: "orange",
           position: "fixed",
           top: "0",
           padding: "0",
           background: "blue",
         }}
       >
-        <table style={{ width: "100%", padding: "0" }}>
-          <tr style={{ borderBottom: "0 solid white", background: "blue" }}>
+        <table style={{ width: "100%" }}>
+          <tr style={{ padding: "0 1rem", border: "2px solid white" }}>
             <td
               style={{
                 width: "280px",
-                borderRight: "1px solid black",
                 padding: "0 1rem",
               }}
             >
               সময়
             </td>
-            <td style={{ padding: "0 1rem" }}>পন্যের নাম</td>
+            <td style={{ padding: "0", borderLeft: "1px solid black" }}>
+              <table className={style.statTableName}>
+                <tr style={{}}>
+                  <td>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        padding: "0 1rem",
+                      }}
+                    >
+                      পন্যের নাম
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </td>
           </tr>
         </table>
       </div>
@@ -182,7 +196,7 @@ const CustomerCart = () => {
           position: "fixed",
           top: "0",
           right: "0",
-          left: "390px",
+          left: "410px",
           overflowX: "scroll",
           webkitscrollbar: "none",
         }}
@@ -265,7 +279,7 @@ const CustomerCart = () => {
           setTableScrollXPosition(tableRef.current.scrollLeft);
         }}
         style={{
-          marginLeft: "390px",
+          marginLeft: "410px",
           marginTop: headerHeight,
           overflowX: "scroll",
           overflowY: "hidden",
@@ -370,7 +384,7 @@ const CustomerCart = () => {
       <div
         ref={timeRef}
         style={{
-          width: "390px",
+          width: "410px",
           position: "fixed",
           top: headerHeight,
           bottom: 0,
@@ -385,7 +399,7 @@ const CustomerCart = () => {
                 <td
                   style={{
                     width: "280px",
-                    padding: "1px 1rem",
+                    padding: "0 1rem",
                   }}
                 >
                   {el.time.day} {el.time.month} {el.time.year} at{" "}
