@@ -132,31 +132,44 @@ const CustomerCart = () => {
     console.log(headerRef.current.clientHeight);
     setHeaderHeight(headerRef.current.clientHeight);
   }, [myProducts?.length]);
-  useEffect(() => {
-    console.log(tableRef.current.pageYOffset);
-  }, [window.pageYOffset, window.pageXOffset]);
+  useEffect(() => {}, [window.pageYOffset, window.pageXOffset]);
   useEffect(() => {
     window.addEventListener("resize", function () {
-      console.log(headerRef.current.clientHeight);
       setHeaderHeight(headerRef.current.clientHeight);
+      console.log(window.screen.availWidth);
       console.log(window.innerWidth);
     });
   }, [window.innerWidth]);
-  console.log(headerHeight);
+  console.log(window.screen.availWidth);
+  console.log(window.innerWidth);
   return (
     <div>
       <div
+        style={{
+          width: "390px",
+          height: headerHeight,
+          background: "orange",
+          position: "fixed",
+          top: "0",
+        }}
+      ></div>
+      <div
         ref={headerRef}
-        style={{ position: "fixed", top: "0", width: "100%" }}
+        style={{
+          position: "fixed",
+          top: "0",
+          right: "0",
+          left: "390px",
+          overflowX: "scroll",
+        }}
       >
         <table
           style={{
-            width: "100%",
-            // position: isScrolled ? "fixed" : "absolute",
             background: "blue",
+            width: "900px",
           }}
         >
-          <tr style={{ width: "100%" }}>
+          {/* <tr style={{ width: "100%" }}>
             <td colSpan={7}>
               <table style={{ width: "100%" }}>
                 <tr style={{ width: "100%" }}>
@@ -171,7 +184,7 @@ const CustomerCart = () => {
                 </tr>
               </table>
             </td>
-          </tr>
+          </tr> */}
           <tr
             style={{
               background: "red",
@@ -182,144 +195,152 @@ const CustomerCart = () => {
           >
             <td
               style={{
-                width: "25%",
-                minWidth: "300px",
-                padding: "1rem",
-              }}
-            >
-              বিক্রির সময়
-            </td>
-            <td
-              style={{
-                width: "15%",
-                minWidth: "120px",
-                padding: "1rem",
-              }}
-            >
-              পন্যের নাম
-            </td>
-            <td
-              style={{
-                width: "15%",
-                minWidth: "120px",
-                padding: "1rem",
+                width: "150px",
+                background: "brown",
+                borderRight: "2px solid black",
               }}
             >
               পন্যের মুল্য
             </td>
-            <td style={{ width: "15%", minWidth: "120px", padding: "1rem" }}>
+            <td
+              style={{
+                width: "150px",
+                background: "blue",
+                borderRight: "2px solid black",
+              }}
+            >
               পন্যের পরিমান
             </td>
-            <td style={{ width: "15%", minWidth: "120px", padding: "1rem" }}>
+            <td
+              style={{
+                width: "150px",
+                background: "green",
+                borderRight: "2px solid black",
+              }}
+            >
               দাম
             </td>
-            <td style={{ width: "15%", minWidth: "120px", padding: "1rem" }}>
+            <td
+              style={{
+                width: "150px",
+                background: "pink",
+                borderRight: "2px solid black",
+              }}
+            >
               সর্বমোট মুল্য
             </td>
-            <td style={{ width: "15%", minWidth: "120px", padding: "1rem" }}>
-              পরিশোধ
-            </td>
-            <td style={{ width: "15%", minWidth: "120px", padding: "1rem" }}>
-              বাকি
-            </td>
+            <td style={{ width: "150px", background: "red" }}>পরিশোধ</td>
+            <td style={{ width: "150px", background: "green" }}>বাকি</td>
           </tr>
         </table>
       </div>
-      <table
-        ref={tableRef}
-        className={style.customerStatTable}
-        style={{ marginTop: headerHeight, marginLeft: "390px" }}
+      <div
+        style={{
+          marginLeft: "390px",
+          marginTop: headerHeight,
+          overflowX: "scroll",
+          overflowY: "hidden",
+        }}
       >
-        <tbody
-          className={style.customerStatBody}
-          style={{ marginTop: headerHeight }}
+        <table
+          ref={tableRef}
+          className={style.customerStatTable}
+          style={{ width: "900px" }}
         >
-          {myProducts.map((el) => {
-            return (
-              <tr>
-                <td style={{ padding: "0" }}>
-                  <table className={style.statTablePrice}>
-                    {el.products.map((el) => {
-                      return (
-                        <tr>
-                          <td>
-                            <span
-                              style={{
-                                display: "inline-block",
-                                padding: "0 1rem",
-                              }}
-                            >
-                              {el.price}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </table>
-                </td>
-                <td style={{ padding: "0" }}>
-                  <table className={style.statTableQuantity}>
-                    {el.products.map((el) => {
-                      return (
-                        <tr>
-                          <td>
-                            <span
-                              style={{
-                                display: "inline-block",
-                                padding: "0 1rem",
-                              }}
-                            >
-                              {el.quantity}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </table>
-                </td>
-                <td style={{ padding: "0" }}>
-                  <table className={style.statTableQuantity}>
-                    {el.products.map((el) => {
-                      return (
-                        <tr>
-                          <td>
-                            <span
-                              style={{
-                                display: "inline-block",
-                                padding: "0 1rem",
-                              }}
-                            >
-                              {el.totalAmount}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </table>
-                </td>
-                <td style={{ padding: "0 1rem" }}>
-                  {el.products
-                    .map((el) => el.totalAmount)
-                    ?.reduce((f, c) => f + c)}
-                </td>
-                <td style={{ padding: "0 1rem" }}>
-                  {el.payAmount ===
-                  el.products
-                    .map((el) => el.totalAmount)
-                    .reduce((f, c) => f + c, 0)
-                    ? "Clear"
-                    : el.payAmount}
-                </td>
-                <td style={{ padding: "0 1rem" }}>
-                  {el.products
-                    .map((el) => el.totalAmount)
-                    .reduce((f, c) => f + c, 0) - el.payAmount}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+          <tbody className={style.customerStatBody}>
+            {myProducts.map((el) => {
+              return (
+                <tr>
+                  <td style={{ padding: "0", width: "150px" }}>
+                    <table className={style.statTablePrice}>
+                      {el.products.map((el) => {
+                        return (
+                          <tr>
+                            <td>
+                              <span
+                                style={{
+                                  display: "inline-block",
+                                  // padding: "0 1rem",
+                                }}
+                              >
+                                {el.price}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </table>
+                  </td>
+                  <td
+                    style={{
+                      padding: "0",
+                      background: "brown",
+                      width: "150px",
+                    }}
+                  >
+                    <table className={style.statTableQuantity}>
+                      {el.products.map((el) => {
+                        return (
+                          <tr>
+                            <td>
+                              <span
+                                style={{
+                                  display: "inline-block",
+                                  // padding: "0 1rem",
+                                }}
+                              >
+                                {el.quantity}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </table>
+                  </td>
+                  <td style={{ padding: "0", width: "150px" }}>
+                    <table className={style.statTableQuantity}>
+                      {el.products.map((el) => {
+                        return (
+                          <tr>
+                            <td>
+                              <span
+                                style={{
+                                  display: "inline-block",
+                                  // padding: "0 1rem",
+                                }}
+                              >
+                                {el.totalAmount}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </table>
+                  </td>
+                  <td style={{ padding: "0 0", width: "150px" }}>
+                    {el.products
+                      .map((el) => el.totalAmount)
+                      ?.reduce((f, c) => f + c)}
+                  </td>
+                  <td style={{ padding: "0 0", width:'150px' }}>
+                    {el.payAmount ===
+                    el.products
+                      .map((el) => el.totalAmount)
+                      .reduce((f, c) => f + c, 0)
+                      ? "Clear"
+                      : el.payAmount}
+                  </td>
+                  <td style={{ padding: "0 0", width:'150px' }}>
+                    {el.products
+                      .map((el) => el.totalAmount)
+                      .reduce((f, c) => f + c, 0) - el.payAmount}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
       {/* ............. */}
       <div
         ref={timeRef}
