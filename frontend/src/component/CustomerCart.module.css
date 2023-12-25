@@ -74,3 +74,7 @@ body {
 .statTableTotalCost > tr:not(:last-child) {
   border-bottom: 1px solid black;
 }
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}

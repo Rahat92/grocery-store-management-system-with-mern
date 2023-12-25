@@ -15,6 +15,7 @@ const CustomerCart = () => {
   const tableRef = useRef();
   const [totalPages, setTotalPages] = useState();
   const [headerHeight, setHeaderHeight] = useState();
+  const [tableScrollXPosition, setTableScrollXPosition] = useState(0);
   const [times, setTimes] = useState([]);
   const [y, setY] = useState(0);
   const [page, setPage] = useState(1);
@@ -142,18 +143,40 @@ const CustomerCart = () => {
   }, [window.innerWidth]);
   console.log(window.screen.availWidth);
   console.log(window.innerWidth);
+  console.log(tableScrollXPosition);
+  useEffect(() => {
+    headerRef.current.scrollLeft = tableScrollXPosition;
+  }, [tableScrollXPosition]);
   return (
     <div>
       <div
         style={{
           width: "390px",
           height: headerHeight,
-          background: "orange",
+          // background: "orange",
           position: "fixed",
           top: "0",
+          padding: "0",
+          background: "blue",
         }}
-      ></div>
+      >
+        <table style={{ width: "100%", padding: "0" }}>
+          <tr style={{ borderBottom: "0 solid white", background: "blue" }}>
+            <td
+              style={{
+                width: "280px",
+                borderRight: "1px solid black",
+                padding: "0 1rem",
+              }}
+            >
+              সময়
+            </td>
+            <td style={{ padding: "0 1rem" }}>পন্যের নাম</td>
+          </tr>
+        </table>
+      </div>
       <div
+        className={style.customerCartHeader}
         ref={headerRef}
         style={{
           position: "fixed",
@@ -161,6 +184,7 @@ const CustomerCart = () => {
           right: "0",
           left: "390px",
           overflowX: "scroll",
+          webkitscrollbar: "none",
         }}
       >
         <table
@@ -200,7 +224,7 @@ const CustomerCart = () => {
                 borderRight: "2px solid black",
               }}
             >
-              পন্যের মুল্য
+              মুল্য
             </td>
             <td
               style={{
@@ -209,7 +233,7 @@ const CustomerCart = () => {
                 borderRight: "2px solid black",
               }}
             >
-              পন্যের পরিমান
+              পরিমান
             </td>
             <td
               style={{
@@ -218,7 +242,7 @@ const CustomerCart = () => {
                 borderRight: "2px solid black",
               }}
             >
-              দাম
+              মুল্য
             </td>
             <td
               style={{
@@ -235,6 +259,11 @@ const CustomerCart = () => {
         </table>
       </div>
       <div
+        ref={tableRef}
+        onScroll={() => {
+          console.log(tableRef.current.scrollLeft);
+          setTableScrollXPosition(tableRef.current.scrollLeft);
+        }}
         style={{
           marginLeft: "390px",
           marginTop: headerHeight,
@@ -242,11 +271,7 @@ const CustomerCart = () => {
           overflowY: "hidden",
         }}
       >
-        <table
-          ref={tableRef}
-          className={style.customerStatTable}
-          style={{ width: "900px" }}
-        >
+        <table className={style.customerStatTable} style={{ width: "900px" }}>
           <tbody className={style.customerStatBody}>
             {myProducts.map((el) => {
               return (
@@ -322,7 +347,7 @@ const CustomerCart = () => {
                       .map((el) => el.totalAmount)
                       ?.reduce((f, c) => f + c)}
                   </td>
-                  <td style={{ padding: "0 0", width:'150px' }}>
+                  <td style={{ padding: "0 0", width: "150px" }}>
                     {el.payAmount ===
                     el.products
                       .map((el) => el.totalAmount)
@@ -330,7 +355,7 @@ const CustomerCart = () => {
                       ? "Clear"
                       : el.payAmount}
                   </td>
-                  <td style={{ padding: "0 0", width:'150px' }}>
+                  <td style={{ padding: "0 0", width: "150px" }}>
                     {el.products
                       .map((el) => el.totalAmount)
                       .reduce((f, c) => f + c, 0) - el.payAmount}
@@ -359,7 +384,7 @@ const CustomerCart = () => {
               <tr style={{ padding: "0 1rem", border: "2px solid white" }}>
                 <td
                   style={{
-                    width: "100%",
+                    width: "280px",
                     padding: "1px 1rem",
                   }}
                 >
