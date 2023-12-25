@@ -199,77 +199,73 @@ const CustomerCart = () => {
           left: "410px",
           overflowX: "scroll",
           webkitscrollbar: "none",
+          background: "blue",
         }}
       >
-        <table
-          style={{
-            background: "blue",
-            width: "900px",
-          }}
-        >
-          {/* <tr style={{ width: "100%" }}>
-            <td colSpan={7}>
-              <table style={{ width: "100%" }}>
-                <tr style={{ width: "100%" }}>
-                  <td style={{ padding: "0 1rem" }}>মোট বিক্রিমুল্য</td>
-                  <td>মোট ক্রয়মুল্য</td>
-                  <td>মোট বাকি</td>
-                </tr>
-                <tr>
-                  <td style={{ padding: "0 1rem" }}>{totalCartAmount}</td>
-                  <td>{totalBuyAmount}</td>
-                  <td>{totalDue}</td>
-                </tr>
-              </table>
-            </td>
-          </tr> */}
-          <tr
-            style={{
-              background: "red",
-              color: "black",
-              fontFamily: "sans-serif",
-              // visibility: "hidden",
-            }}
-          >
-            <td
-              style={{
-                width: "150px",
-                background: "brown",
-                borderRight: "2px solid black",
-              }}
-            >
-              মুল্য
-            </td>
-            <td
-              style={{
-                width: "150px",
-                background: "blue",
-                borderRight: "2px solid black",
-              }}
-            >
-              পরিমান
-            </td>
-            <td
-              style={{
-                width: "150px",
-                background: "green",
-                borderRight: "2px solid black",
-              }}
-            >
-              মুল্য
-            </td>
-            <td
-              style={{
-                width: "150px",
-                background: "pink",
-                borderRight: "2px solid black",
-              }}
-            >
-              সর্বমোট মুল্য
-            </td>
-            <td style={{ width: "150px", background: "red" }}>পরিশোধ</td>
-            <td style={{ width: "150px", background: "green" }}>বাকি</td>
-          </tr>
+        <table className={style.customerStatTable} style={{ width: "900px" }}>
+          <tbody className={style.customerStatBody}>
+            <tr>
+              <td style={{ padding: "0", width: "150px" }}>
+                <table className={style.statTablePrice}>
+                  <tr>
+                    <td>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          // padding: "0 1rem",
+                        }}
+                      >
+                        মুল্য
+                      </span>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td
+                style={{
+                  padding: "0",
+                  background: "brown",
+                  width: "150px",
+                }}
+              >
+                <table className={style.statTableQuantity}>
+                  <tr>
+                    <td>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          // padding: "0 1rem",
+                        }}
+                      >
+                        পরিমান
+                      </span>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td style={{ padding: "0", width: "150px" }}>
+                <table className={style.statTableQuantity}>
+                  <tr>
+                    <td>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          // padding: "0 1rem",
+                        }}
+                      >
+                        মোট মুল্য
+                      </span>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td style={{ padding: "0 0", width: "150px" }}>সর্বমোট মুল্য</td>
+              <td style={{ padding: "0 0", width: "150px" }}>
+                পরিশোধিত মোট মুল্য
+              </td>
+              <td style={{ padding: "0 0", width: "150px" }}>বাকি মোট মুল্য</td>
+            </tr>
+          </tbody>
         </table>
       </div>
       <div
